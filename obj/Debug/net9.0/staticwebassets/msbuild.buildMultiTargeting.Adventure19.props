@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Adventure19.props" />
+</Project>
