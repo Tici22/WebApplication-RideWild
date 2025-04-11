@@ -5,6 +5,8 @@ La sorgente dati è costituita dal Database SQL: AdventureWorksLT2019
 N.B: Il DB in questione, può essere modificato SOLAMENTE in AGGIUNTA (tabelle, campi, viste, stored, etc.).
 Obiettivi di Ridewild e funzionalità richieste
 Gestione totale del DB come eCommerce, con prevalente compra vendita di MountainBike e pezzi di ricambio e articoli connessi (ad ogni modo, solo quello che è contemplato e contenuto delle tabelle products.
+
+
 Ridewild è quindi una web app, per gli acquisti o anche solamente per curiosare tra i prodotti offerti.
 Naturalmente, la curiosità deve essere gratuita: ossia, NO account, NO pre requisiti.
 Se la curiosità, ossia la navigazione e la ricerca di prodotti, ha convinto il potenziale Cliente, se quest’ultimo vuole acquistare, deve registrarsi con un account sul Ridewild.
