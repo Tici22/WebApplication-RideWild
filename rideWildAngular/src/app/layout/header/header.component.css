@@ -1,0 +1,25 @@
+.header > h1 {
+    justify-content: center; 
+    font-size: 2rem;
+    color: #333;
+    margin : 0 5px;
+  }
+  .header > img {
+      width: 110px;
+      aspect-ratio: 1/1;
+      display:block;
+      border-radius: 15px;
+  }
+  header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #f8f9fa;
+    margin : 0 5px;
+  }
+  div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+  }

@@ -1,0 +1,49 @@
+<div class="product-list-container">
+    <h2>Esplora i Nostri Prodotti</h2>
+  
+    <div *ngIf="isLoading" class="loading-indicator">
+      <p>Caricamento in corso...</p>
+    </div>
+  
+    <div *ngIf="!isLoading && products.length === 0" class="no-products">
+      <p>Nessun prodotto trovato in questa pagina.</p>
+       <button *ngIf="currentPage > 1" (click)="goToPreviousPage()" [disabled]="isLoading">
+         &laquo; Torna Indietro
+       </button>
+    </div>
+  
+    <div *ngIf="!isLoading && products.length > 0">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Codice</th>
+            <th>Colore</th>
+            <th>Prezzo</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of products">
+            <td>{{ product.name }}</td>
+            <td>{{ product.productNumber }}</td>
+            <td>{{ product.color || 'N/D' }}</td>
+            <td>{{ product.listPrice | currency:'EUR' }}</td>
+            <td>
+              <button (click)="viewDetails(product.productId)">Dettagli</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <div class="pagination-controls">
+        <button (click)="goToPreviousPage()" [disabled]="currentPage <= 1 || isLoading">
+          &laquo; Precedente
+        </button>
+        <span> Pagina {{ currentPage }} </span>
+        <button (click)="goToNextPage()" [disabled]="!hasNextPage || isLoading">
+          Successiva &raquo;
+        </button>
+      </div>
+    </div>
+  </div>
