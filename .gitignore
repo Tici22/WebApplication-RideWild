@@ -1,0 +1,19 @@
+# Ignora le cartelle di compilazione
+[Bb]in/
+[Oo]bj/
+
+# Ignora la cartella di Visual Studio
+.vs/
+
+# Ignora i file specifici dell'utente
+*.suo
+*.user
+
+# Ignora altri file temporanei o cache comuni
+*.db
+*.cache
+*.vsidx
+*.*proj.nuget.cache
+*.*proj.nuget.dgspec.json
+
+# Potresti voler aggiungere anche altri file specifici se necessario
