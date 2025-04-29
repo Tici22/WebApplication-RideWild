@@ -1,5 +1,5 @@
 .card {
-    --bg-card: #27272a;
+    --bg-card: #0c0c13fb;
     --primary: #6d28d9;
     --primary-800: #4c1d95;
     --primary-shadow: #2e1065;
@@ -10,13 +10,12 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.3rem;
 
-    padding: 1rem;
-    width: 14rem;
+    padding: 0.3rem;
+    width: 20rem;
     background-color: var(--bg-card);
-
-    border-radius: 1rem;
+    border-radius: 0.8rem;
 }
 
 /* Immagine completamente adattata al contenitore */
