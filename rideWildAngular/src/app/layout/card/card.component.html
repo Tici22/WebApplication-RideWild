@@ -1,0 +1,35 @@
+<!-- <div class="card">
+    <div class="card-header">
+        <h3>{{ product.name }}</h3>
+        <h2>codice prodotto: {{ product.productNumber }}</h2>
+        <h2>colore: {{ product.color || 'N/D' }} </h2>
+        <h2>prezzo: {{ product.listPrice}} &euro;</h2>
+    </div>
+    <div class="card-body">
+        <img src="images/placeholderbike.jpg" alt="">
+    </div>
+</div> -->
+
+
+<div class="card">
+    <div class="image_container">
+        <img src="images/placeholderbike.jpg" class="image">
+    </div>
+    <div class="title">
+        <span>{{ product.name }}</span>
+        <span>Code: {{ product.productNumber }}</span>
+        <span>Colour: {{ product.color || 'N/D' }}</span>
+    </div>
+    <div class="action">
+        <div class="price">
+            <span>€{{ product.listPrice }}</span>
+        </div>
+        <button class="cart-button">
+            <svg class="cart-icon" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.25 3h1.386c...Z" stroke-linejoin="round" stroke-linecap="round"></path>
+            </svg>
+            <span>Details</span>
+        </button>
+    </div>
+</div>

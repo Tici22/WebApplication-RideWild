@@ -11,11 +11,11 @@ import { environment } from '../../../environments/environment';
 export class ProductService {
 
   private baseApiUrl = environment.apiUrl;
-  private productsApiUrl = this.baseApiUrl + 'products'; 
+  private productsApiUrl = this.baseApiUrl + 'products';
 
   constructor(private http: HttpClient) { }
 
-  getProducts(pageNumber: number = 1, pageSize: number = 20): Observable<ProductDto[]> {
+  getProducts(pageNumber: number = 1, pageSize: number = 21): Observable<ProductDto[]> {
     let params = new HttpParams()
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
@@ -25,7 +25,7 @@ export class ProductService {
   }
 
   getProductById(id: number): Observable<ProductDto> {
-    const url = `${this.productsApiUrl}/${id}`; 
+    const url = `${this.productsApiUrl}/${id}`;
     console.log(`ProductService: Chiamata GET a ${url}`);
     return this.http.get<ProductDto>(url);
   }

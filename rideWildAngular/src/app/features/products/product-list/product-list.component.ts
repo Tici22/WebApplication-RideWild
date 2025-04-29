@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
-import { RouterModule } from '@angular/router'; 
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ProductService } from '../../../services/product.service/product.service';
-import { ProductDto } from '../../../models/product.models'; 
+import { ProductDto } from '../../../models/product.models';
+import { CardComponent } from '../../../layout/card/card.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, CardComponent],
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css']
 })
@@ -16,10 +17,10 @@ export class ProductListComponent implements OnInit {
   products: ProductDto[] = [];
   isLoading: boolean = false;
   currentPage: number = 1;
-  readonly pageSize: number = 20;
-  hasNextPage: boolean = true; 
+  readonly pageSize: number = 21;
+  hasNextPage: boolean = true;
 
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService) { }
 
   ngOnInit(): void {
     this.loadProductsForPage(this.currentPage);
@@ -27,7 +28,7 @@ export class ProductListComponent implements OnInit {
 
   loadProductsForPage(page: number): void {
     if (page < 1 || this.isLoading) {
-        return;
+      return;
     }
 
     this.isLoading = true;
@@ -36,24 +37,24 @@ export class ProductListComponent implements OnInit {
       next: (data) => {
         console.log(`Dati ricevuti per pagina ${page}:`, data);
         if (data && data.length > 0) {
-            this.products = data; 
-            this.currentPage = page; 
-            this.hasNextPage = data.length === this.pageSize;
+          this.products = data;
+          this.currentPage = page;
+          this.hasNextPage = data.length === this.pageSize;
         } else {
-            if (page > 1) {
-                this.currentPage = page - 1; 
-            } else {
-                this.products = []; 
-            }
-            this.hasNextPage = false;
+          if (page > 1) {
+            this.currentPage = page - 1;
+          } else {
+            this.products = [];
+          }
+          this.hasNextPage = false;
         }
-        this.isLoading = false; 
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Errore API durante caricamento prodotti:', error);
         this.isLoading = false;
-        this.products = []; 
-        this.hasNextPage = false; 
+        this.products = [];
+        this.hasNextPage = false;
       }
     });
   }
@@ -64,10 +65,10 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-  
+
   goToNextPage(): void {
-    if (this.hasNextPage) { 
-       this.loadProductsForPage(this.currentPage + 1);
+    if (this.hasNextPage) {
+      this.loadProductsForPage(this.currentPage + 1);
     }
   }
 

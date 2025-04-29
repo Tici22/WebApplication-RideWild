@@ -1,19 +1,25 @@
 <div class="product-list-container">
-    <h2>Esplora i Nostri Prodotti</h2>
-  
-    <div *ngIf="isLoading" class="loading-indicator">
-      <p>Caricamento in corso...</p>
-    </div>
-  
-    <div *ngIf="!isLoading && products.length === 0" class="no-products">
-      <p>Nessun prodotto trovato in questa pagina.</p>
-       <button *ngIf="currentPage > 1" (click)="goToPreviousPage()" [disabled]="isLoading">
-         &laquo; Torna Indietro
-       </button>
-    </div>
-  
-    <div *ngIf="!isLoading && products.length > 0">
-      <table class="product-table">
+  <h2>Esplora i Nostri Prodotti</h2>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <p>Caricamento in corso...</p>
+  </div>
+
+  <div *ngIf="!isLoading && products.length === 0" class="no-products">
+    <p>Nessun prodotto trovato in questa pagina.</p>
+    <button *ngIf="currentPage > 1" (click)="goToPreviousPage()" [disabled]="isLoading">
+      &laquo; Torna Indietro
+    </button>
+  </div>
+
+  <div *ngIf="!isLoading && products.length > 0">
+    <div class="container">
+      <div class="row">
+        <div class="col-4" *ngFor="let product of products">
+          <app-card [product]="product" (viewDetails)="viewDetails(product.productId)"></app-card>
+        </div>
+      </div>
+      <!-- <table class="product-table">
         <thead>
           <tr>
             <th>Nome</th>
@@ -34,8 +40,8 @@
             </td>
           </tr>
         </tbody>
-      </table>
-  
+      </table> -->
+
       <div class="pagination-controls">
         <button (click)="goToPreviousPage()" [disabled]="currentPage <= 1 || isLoading">
           &laquo; Precedente
