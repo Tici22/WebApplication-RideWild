@@ -39,16 +39,22 @@ public partial class AdventureWorksLt2019Context : DbContext
 
     public virtual DbSet<SalesOrderHeader> SalesOrderHeaders { get; set; }
 
+    public virtual DbSet<VCustomersIndirizziExtra> VCustomersIndirizziExtras { get; set; }
+
     public virtual DbSet<VGetAllCategory> VGetAllCategories { get; set; }
 
     public virtual DbSet<VProductAndDescription> VProductAndDescriptions { get; set; }
 
     public virtual DbSet<VProductModelCatalogDescription> VProductModelCatalogDescriptions { get; set; }
 
-    /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public virtual DbSet<VcountIndirizziPlu> VcountIndirizziPlus { get; set; }
+
+    public virtual DbSet<VcounterDipendentiNull> VcounterDipendentiNulls { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS03;Initial Catalog=AdventureWorksLT2019;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;");
-    */
+        => optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS01;Initial Catalog=AdventureWorksLT2019;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
@@ -178,7 +184,7 @@ public partial class AdventureWorksLt2019Context : DbContext
 
         modelBuilder.Entity<CustomerAddress>(entity =>
         {
-            entity.HasKey(e => new { e.CustomerId, e.AddressId }).HasName("PK_CustomerAddress_CustomerID_AddressID");
+            entity.HasKey(e => new { e.CustomerId, e.AddressId });
 
             entity.ToTable("CustomerAddress", "SalesLT", tb => tb.HasComment("Cross-reference table mapping customers to their address(es)."));
 
@@ -572,6 +578,15 @@ public partial class AdventureWorksLt2019Context : DbContext
                 .HasConstraintName("FK_SalesOrderHeader_Address_ShipTo_AddressID");
         });
 
+        modelBuilder.Entity<VCustomersIndirizziExtra>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("v_Customers_IndirizziExtra");
+
+            entity.Property(e => e.CustomerId).HasColumnName("CustomerID");
+        });
+
         modelBuilder.Entity<VGetAllCategory>(entity =>
         {
             entity
@@ -632,6 +647,24 @@ public partial class AdventureWorksLt2019Context : DbContext
             entity.Property(e => e.WarrantyDescription).HasMaxLength(256);
             entity.Property(e => e.WarrantyPeriod).HasMaxLength(256);
             entity.Property(e => e.Wheel).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<VcountIndirizziPlu>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VCountIndirizziPlus");
+
+            entity.Property(e => e.CustomerId).HasColumnName("customerID");
+        });
+
+        modelBuilder.Entity<VcounterDipendentiNull>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("VCounterDipendentiNull");
+
+            entity.Property(e => e.TotaleDipendenti).HasColumnName("Totale dipendenti");
         });
 
         OnModelCreatingPartial(modelBuilder);

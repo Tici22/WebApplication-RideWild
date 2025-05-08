@@ -2,6 +2,8 @@
 using Adventure19.Models;
 using Microsoft.EntityFrameworkCore;
 using Adventure19.Controllers;
+using Adventure19.AuthModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Adventure19
 {
@@ -27,12 +29,14 @@ namespace Adventure19
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddDbContext<AuthDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
             builder.Services.AddDbContext<AdventureWorksLt2019Context>(options =>
        options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
 
-                        builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddEndpointsApiExplorer();
 
-                        builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
@@ -42,11 +46,12 @@ namespace Adventure19
                 app.MapOpenApi();
             }
 
-                        if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-};
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+            ;
             app.UseCors("CORSPolicy");
             app.UseHttpsRedirection();
 

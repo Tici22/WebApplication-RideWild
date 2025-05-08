@@ -56,7 +56,7 @@ public partial class Customer
     /// <summary>
     /// E-mail address for the person.
     /// </summary>
-    public string? EmailAddress { get; set; }
+    public string EmailAddress { get; set; } = null!;
 
     /// <summary>
     /// Phone number associated with the person.
@@ -66,22 +66,24 @@ public partial class Customer
     /// <summary>
     /// Password for the e-mail account.
     /// </summary>
-    public string PasswordHash { get; set; } = null!;
+    public string? PasswordHash { get; set; }
 
     /// <summary>
     /// Random value concatenated with the password string before the password is hashed.
     /// </summary>
-    public string PasswordSalt { get; set; } = null!;
+    public string? PasswordSalt { get; set; }
 
     /// <summary>
     /// ROWGUIDCOL number uniquely identifying the record. Used to support a merge replication sample.
     /// </summary>
-    public Guid Rowguid { get; set; }
+    public Guid? Rowguid { get; set; }
 
     /// <summary>
     /// Date and time the record was last updated.
     /// </summary>
     public DateTime ModifiedDate { get; set; }
+
+    public bool IsMigrated { get; set; }
 
     public virtual ICollection<CustomerAddress> CustomerAddresses { get; set; } = new List<CustomerAddress>();
 
