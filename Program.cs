@@ -30,7 +30,7 @@ namespace Adventure19
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddDbContext<AuthDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("AuthDbConnection")));
             builder.Services.AddDbContext<AdventureWorksLt2019Context>(options =>
        options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
 

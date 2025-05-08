@@ -176,59 +176,60 @@ namespace Adventure19.Controllers
             try
             {
                 // 1. Controllo nel nuovo DB
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-                if (existingUser != null)
-                {
-                    return Conflict("Email già registrata nel nuovo database.");
-                }
-
-                // 2. Controllo nel vecchio DB
-                var existingOldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
-                if (existingOldCustomer != null)
-                {
-                    return Conflict("Email già esistente nel vecchio sistema. Effettua il login per migrare.");
-                }
-
-                // 3. Hash e salt della password
-                string salt = BCrypt.Net.BCrypt.GenerateSalt();
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password + salt);
-
-                // 4. Salva nel nuovo DB (Users)
-                var newUser = new User
-                {
-                    Email = email,
-                    Password = hashedPassword,
-                    FullName = fullName
-                };
-                _context.Users.Add(newUser);
-                await _context.SaveChangesAsync();
-
-                // 5. Salva nel vecchio DB (Customers)
-                var nameParts = fullName.Split(' ', 2);
-                string firstName = nameParts.Length > 0 ? nameParts[0] : fullName;
-                string lastName = nameParts.Length > 1 ? nameParts[1] : "";
-
-                var newCustomer = new Customer
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    EmailAddress = email,
-                    ModifiedDate = DateTime.UtcNow,
-
-                    IsMigrated = true, // oppure false se preferisci segnare che è nato dal nuovo sistema
-                    NameStyle = false // imposta un default
-                                      // Aggiungi altri campi obbligatori con valori default o logici
-                };
-
-                _oldcontext.Customers.Add(newCustomer);
-                await _oldcontext.SaveChangesAsync();
-
-                return Ok("Registrazione completata con successo e sincronizzata.");
-            }catch (Exception ex)
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (existingUser != null)
             {
-                return BadRequest($"Errore durante la registrazione: {ex.Message}");
+                return Conflict("Email già registrata nel nuovo database.");
             }
 
+            // 2. Controllo nel vecchio DB
+            var existingOldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+            if (existingOldCustomer != null)
+            {
+                return Conflict("Email già esistente nel vecchio sistema. Effettua il login per migrare.");
+            }
+
+            // 3. Hash e salt della password
+            string salt = BCrypt.Net.BCrypt.GenerateSalt();
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password + salt);
+
+            // 4. Salva nel nuovo DB (Users)
+            var newUser = new User
+            {
+                Email = email,
+                Password = hashedPassword,
+                FullName = fullName
+            };
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            // 5. Salva nel vecchio DB (Customers)
+            var nameParts = fullName.Split(' ', 2);
+            string firstName = nameParts.Length > 0 ? nameParts[0] : fullName;
+            string lastName = nameParts.Length > 1 ? nameParts[1] : "";
+
+            var newCustomer = new Customer
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                EmailAddress = email,
+                ModifiedDate = DateTime.UtcNow,
+                
+                IsMigrated = true, // oppure false se preferisci segnare che è nato dal nuovo sistema
+                NameStyle = false // imposta un default
+                                  // Aggiungi altri campi obbligatori con valori default o logici
+            };
+
+            _oldcontext.Customers.Add(newCustomer);
+            await _oldcontext.SaveChangesAsync();
+
+            return Ok("Registrazione completata con successo e sincronizzata.");
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+            
         }
 
 
