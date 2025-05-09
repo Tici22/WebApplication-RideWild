@@ -9,6 +9,7 @@ using Adventure19.Models;
 using System.ComponentModel.DataAnnotations;
 using Adventure19.AuthModels;
 using Microsoft.CodeAnalysis.Scripting;
+using Adventure19.Services;
 
 namespace Adventure19.Controllers
 {
@@ -18,10 +19,13 @@ namespace Adventure19.Controllers
     {
         private readonly AdventureWorksLt2019Context _oldcontext; // Vecchio Db
         private readonly AuthDbContext _context; // Nuovo Db
-        public CustomersController(AdventureWorksLt2019Context oldcontext,AuthDbContext context)
+        private readonly JwtService _jwtService;
+
+        public CustomersController(AdventureWorksLt2019Context oldcontext, AuthDbContext context, JwtService jwtService)
         {
             _oldcontext = oldcontext;
             _context = context;
+            _jwtService = jwtService;
         }
 
         // GET: api/Customers
@@ -57,7 +61,7 @@ namespace Adventure19.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); 
+                return BadRequest(ModelState);
             }
 
             var customerToUpdate = await _oldcontext.Customers.Include(c => c.CustomerAddresses).FirstOrDefaultAsync(c => c.CustomerId == id);
@@ -85,7 +89,7 @@ namespace Adventure19.Controllers
             {
                 customerToUpdate.CustomerAddresses = customerToUpdate.CustomerAddresses.Where(ca => customerUpdate.AddressIds.Contains(ca.AddressId)).ToList();
 
-                foreach (var addressId in customerUpdate.AddressIds)          
+                foreach (var addressId in customerUpdate.AddressIds)
                 {
                     if (!customerToUpdate.CustomerAddresses.Any(ca => ca.AddressId == addressId))
                     {
@@ -130,6 +134,7 @@ namespace Adventure19.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(string email, string password)
         {
+            string token = null;
             // 1. Verifica se esiste nel nuovo DB 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
@@ -139,7 +144,10 @@ namespace Adventure19.Controllers
                 if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
                     return Unauthorized("Password errata.");
 
-                return Ok("Accesso riuscito (già migrato).");
+                // Genera il token JWT per l'utente
+                token = _jwtService.GenerateToken(user.Id.ToString(), user.Email);
+
+                return Ok(new { message = "Accesso riuscito.", token });
             }
 
             // 2. Verifica se esiste nel vecchio DB (AdventureDb)
@@ -156,7 +164,7 @@ namespace Adventure19.Controllers
             {
                 FullName = $"{oldCustomer.FirstName} {oldCustomer.LastName}",
                 Email = oldCustomer.EmailAddress!,
-                Password = oldCustomer.PasswordHash 
+                Password = oldCustomer.PasswordHash
             };
 
             _context.Users.Add(newUser);
@@ -167,7 +175,10 @@ namespace Adventure19.Controllers
             _oldcontext.Customers.Update(oldCustomer);
             await _oldcontext.SaveChangesAsync();
 
-            return Ok("Accesso riuscito e utente migrato nel nuovo sistema.");
+            // Genera il token JWT per l'utente migrato
+            token = _jwtService.GenerateToken(newUser.Id.ToString(), newUser.Email);
+
+            return Ok(new { message = "Accesso riuscito e utente migrato nel nuovo sistema.", token });
         }
 
         [HttpPost("register")]
@@ -176,66 +187,60 @@ namespace Adventure19.Controllers
             try
             {
                 // 1. Controllo nel nuovo DB
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (existingUser != null)
-            {
-                return Conflict("Email già registrata nel nuovo database.");
-            }
+                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (existingUser != null)
+                {
+                    return Conflict("Email già registrata nel nuovo database.");
+                }
 
-            // 2. Controllo nel vecchio DB
-            var existingOldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
-            if (existingOldCustomer != null)
-            {
-                return Conflict("Email già esistente nel vecchio sistema. Effettua il login per migrare.");
-            }
+                // 2. Controllo nel vecchio DB
+                var existingOldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+                if (existingOldCustomer != null)
+                {
+                    return Conflict("Email già esistente nel vecchio sistema. Effettua il login per migrare.");
+                }
 
-            // 3. Hash e salt della password
-            string salt = BCrypt.Net.BCrypt.GenerateSalt();
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password + salt);
+                // 3. Hash e salt della password
+                string salt = BCrypt.Net.BCrypt.GenerateSalt();
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password + salt);
 
-            // 4. Salva nel nuovo DB (Users)
-            var newUser = new User
-            {
-                Email = email,
-                Password = hashedPassword,
-                FullName = fullName
-            };
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
+                // 4. Salva nel nuovo DB (Users)
+                var newUser = new User
+                {
+                    Email = email,
+                    Password = hashedPassword,
+                    FullName = fullName
+                };
+                _context.Users.Add(newUser);
+                await _context.SaveChangesAsync();
 
-            // 5. Salva nel vecchio DB (Customers)
-            var nameParts = fullName.Split(' ', 2);
-            string firstName = nameParts.Length > 0 ? nameParts[0] : fullName;
-            string lastName = nameParts.Length > 1 ? nameParts[1] : "";
+                // 5. Salva nel vecchio DB (Customers)
+                var nameParts = fullName.Split(' ', 2);
+                string firstName = nameParts.Length > 0 ? nameParts[0] : fullName;
+                string lastName = nameParts.Length > 1 ? nameParts[1] : "";
 
-            var newCustomer = new Customer
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                EmailAddress = email,
-                ModifiedDate = DateTime.UtcNow,
-                
-                IsMigrated = true, // oppure false se preferisci segnare che è nato dal nuovo sistema
-                NameStyle = false // imposta un default
-                                  // Aggiungi altri campi obbligatori con valori default o logici
-            };
+                var newCustomer = new Customer
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    EmailAddress = email,
+                    ModifiedDate = DateTime.UtcNow,
 
-            _oldcontext.Customers.Add(newCustomer);
-            await _oldcontext.SaveChangesAsync();
+                    IsMigrated = true, // oppure false se preferisci segnare che è nato dal nuovo sistema
+                    NameStyle = false // imposta un default
+                                      // Aggiungi altri campi obbligatori con valori default o logici
+                };
 
-            return Ok("Registrazione completata con successo e sincronizzata.");
+                _oldcontext.Customers.Add(newCustomer);
+                await _oldcontext.SaveChangesAsync();
+
+                return Ok("Registrazione completata con successo e sincronizzata.");
             }
             catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
-            
         }
-
-
-
-
-
 
         // DELETE: api/Customers/5
         [HttpDelete("{id}")]
@@ -247,21 +252,20 @@ namespace Adventure19.Controllers
 
             if (customer == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
-            customer.CustomerAddresses.Clear(); 
-            _oldcontext.Customers.Remove(customer); 
-            await _oldcontext.SaveChangesAsync();   
+            customer.CustomerAddresses.Clear();
+            _oldcontext.Customers.Remove(customer);
+            await _oldcontext.SaveChangesAsync();
 
-            return NoContent(); 
+            return NoContent();
         }
 
         private bool CustomerExists(int id)
         {
             return _oldcontext.Customers.Any(e => e.CustomerId == id);
         }
-
 
         #region Models Che non usiamo
         public class CustomerCreateModel
@@ -320,8 +324,6 @@ namespace Adventure19.Controllers
             public string PasswordSalt { get; set; } = null!;
             public List<int>? AddressIds { get; set; }
         }
-
         #endregion
     }
 }
-
