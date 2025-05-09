@@ -201,8 +201,7 @@ namespace Adventure19.Controllers
                 }
 
                 // 3. Hash e salt della password
-                string salt = BCrypt.Net.BCrypt.GenerateSalt();
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password + salt);
+                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
                 // 4. Salva nel nuovo DB (Users)
                 var newUser = new User
