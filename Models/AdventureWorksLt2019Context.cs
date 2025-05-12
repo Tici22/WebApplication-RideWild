@@ -1,60 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Adventure19.Models;
 
 public partial class AdventureWorksLt2019Context : DbContext
 {
-    public AdventureWorksLt2019Context()
-    {
-    }
+    private readonly IConfiguration _configuration;
 
-    public AdventureWorksLt2019Context(DbContextOptions<AdventureWorksLt2019Context> options)
+    public AdventureWorksLt2019Context(DbContextOptions<AdventureWorksLt2019Context> options,
+                                       IConfiguration configuration)
         : base(options)
     {
+        _configuration = configuration;
     }
 
     public virtual DbSet<Address> Addresses { get; set; }
-
     public virtual DbSet<BuildVersion> BuildVersions { get; set; }
-
     public virtual DbSet<Customer> Customers { get; set; }
-
     public virtual DbSet<CustomerAddress> CustomerAddresses { get; set; }
-
     public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
-
     public virtual DbSet<Product> Products { get; set; }
-
     public virtual DbSet<ProductCategory> ProductCategories { get; set; }
-
     public virtual DbSet<ProductDescription> ProductDescriptions { get; set; }
-
     public virtual DbSet<ProductModel> ProductModels { get; set; }
-
     public virtual DbSet<ProductModelProductDescription> ProductModelProductDescriptions { get; set; }
-
     public virtual DbSet<SalesOrderDetail> SalesOrderDetails { get; set; }
-
     public virtual DbSet<SalesOrderHeader> SalesOrderHeaders { get; set; }
-
     public virtual DbSet<VCustomersIndirizziExtra> VCustomersIndirizziExtras { get; set; }
-
     public virtual DbSet<VGetAllCategory> VGetAllCategories { get; set; }
-
     public virtual DbSet<VProductAndDescription> VProductAndDescriptions { get; set; }
-
     public virtual DbSet<VProductModelCatalogDescription> VProductModelCatalogDescriptions { get; set; }
-
     public virtual DbSet<VcountIndirizziPlu> VcountIndirizziPlus { get; set; }
-
     public virtual DbSet<VcounterDipendentiNull> VcounterDipendentiNulls { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS01;Initial Catalog=AdventureWorksLT2019;Integrated Security=True;Encrypt=False;TrustServerCertificate=True;");
-
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            var connectionString = _configuration.GetConnectionString("DbConnection");
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("SQL_Latin1_General_CP1_CI_AS");
