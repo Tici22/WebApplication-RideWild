@@ -339,11 +339,75 @@ namespace Adventure19.Controllers
             return Ok("Password impostata e utente migrato con successo.");
         }
 
-        [HttpPost("forgotted-password")] // Deve mandare la mail
-        //public Task<IActionResult> RequestPassword(string email)
-        //{
-            
-        //}
+        [HttpPost("forgotted-password")]
+        public async Task<IActionResult> ForgotPassword([FromServices] EmailService emailService, string email)
+        {
+            // Verifica se esiste nei DB
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+            if (user == null && oldCustomer == null)
+                return NotFound("Utente non trovato.");
+
+            // Genera codice 8 cifre
+            var random = new Random();
+            var code = random.Next(10000000, 99999999).ToString();
+
+            // Salva codice temporaneo
+            PasswordResetStore.ResetCodes[email] = code;
+
+            // Invia email
+            await emailService.SendEmailAsync(email, "Codice recupero password", $"Il tuo codice di verifica è: {code}");
+
+            return Ok("Codice di verifica inviato via email.");
+        }
+
+        [HttpPost("verify-code-and-reset")]
+        public async Task<IActionResult> VerifyCodeAndReset(string email, string code, string newPassword, string fullName = "")
+        {
+            if (!PasswordResetStore.ResetCodes.ContainsKey(email))
+                return NotFound("Nessuna richiesta di reset trovata per questa email.");
+
+            if (PasswordResetStore.ResetCodes[email] != code)
+                return Unauthorized("Codice non valido.");
+
+            PasswordResetStore.ResetCodes.Remove(email); // rimuovi codice usato
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user != null)
+            {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+                return Ok("Password aggiornata con successo.");
+            }
+
+            var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+            if (oldCustomer == null)
+                return NotFound("Utente non trovato.");
+
+            if (oldCustomer.IsMigrated)
+                return Conflict("Utente già migrato. Riprovare login/reset nel nuovo sistema.");
+
+            // Migrazione con nuova password
+            var newUser = new User
+            {
+                FullName = string.IsNullOrWhiteSpace(fullName) ? $"{oldCustomer.FirstName} {oldCustomer.LastName}" : fullName,
+                Email = oldCustomer.EmailAddress!,
+                Password = BCrypt.Net.BCrypt.HashPassword(newPassword)
+            };
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            oldCustomer.IsMigrated = true;
+            _oldcontext.Customers.Update(oldCustomer);
+            await _oldcontext.SaveChangesAsync();
+
+            return Ok("Password aggiornata e utente migrato con successo.");
+        }
 
         private bool CustomerExists(int id)
         {
