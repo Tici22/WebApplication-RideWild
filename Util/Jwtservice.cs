@@ -21,14 +21,15 @@ namespace Adventure19.Services
             _expiresInMinutes = int.Parse(configuration["Jwt:ExpiresInMinutes"]);
         }
 
-        public string GenerateToken(string userId, string userEmail)
+        public string GenerateToken(string userId, string userEmail, string useCase = "auth") // UseCase è un claim personalizzato
         {
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, userId),
                 new Claim(ClaimTypes.Email, userEmail),
                 new Claim(JwtRegisteredClaimNames.Sub, userEmail),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("use",useCase) // Token che può essere usato per più scopi
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));

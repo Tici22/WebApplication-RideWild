@@ -10,6 +10,8 @@ using System.ComponentModel.DataAnnotations;
 using Adventure19.AuthModels;
 using Microsoft.CodeAnalysis.Scripting;
 using Adventure19.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Adventure19.Controllers
 {
@@ -130,55 +132,80 @@ namespace Adventure19.Controllers
 
             return NoContent();
         }
+        //POST : api/Customers/login
 
+        /// <summary>
+        /// Il metodo Login verifica se l'utente esiste nel nuovo Db(AuthDB) e viene trovato
+        /// verifica la corrispondenza della password con BCrypt, se errata restituisce l'errore
+        /// In caso di corrispondenza genera il token JWT e lo restituisce, con un messaggio di accesso riuscito
+        /// Verifica se esiste nel vecchio DB (AdventureDb) e se non esiste restituisce l'errore
+        /// Se esiste nel vecchio DB, verifica se l'utente è migrato, se non è migrato restituisce errore
+        /// Se dice che è migrato=> Vuol dire che non è stato salvato nel nuovo db e lo salva
+        /// 
         [HttpPost("login")]
         public async Task<IActionResult> Login(string email, string password)
         {
-            string token = null;
-            // 1. Verifica se esiste nel nuovo DB 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-
-            if (user != null)
+            try
             {
-                // Verifica la password con BCrypt
-                if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
-                    return Unauthorized("Password errata.");
+                string token = null;
+                //  Verifica se esiste nel nuovo DB 
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-                // Genera il token JWT per l'utente
-                token = _jwtService.GenerateToken(user.Id.ToString(), user.Email);
+                if (user != null)
+                {
+                    // Verifica la password con BCrypt
+                    if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+                        return Unauthorized("Password errata.");
 
-                return Ok(new { message = "Accesso riuscito.", token });
+                    // Genera il token JWT per l'utente
+                    token = _jwtService.GenerateToken(user.Id.ToString(), user.Email);
+
+                    return Ok(new { message = "Accesso riuscito.", token });
+                }
+
+                //  Verifica se esiste nel vecchio DB (AdventureDb)
+                var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+                if (oldCustomer == null)
+                    return NotFound("Utente non trovato in nessun database.");
+               
+                if(!oldCustomer.IsMigrated)
+                {
+                    return Unauthorized("Reset Password");
+                }
+                if (oldCustomer.IsMigrated && user == null) // => Se l'utente è migrato ma non esiste nel nuovo DB (Da fare => Rocco)
+                {
+
+                    return Unauthorized("L'utente è segnalato come Migrato => Ma non lo è!");
+                }
+                //  Salvataggio nel nuovo DB (migrazione)
+                var newUser = new User
+                {
+                    FullName = $"{oldCustomer.FirstName} {oldCustomer.LastName}",
+                    Email = oldCustomer.EmailAddress!,
+                    Password = oldCustomer.PasswordHash
+                };
+
+                _context.Users.Add(newUser);
+                await _context.SaveChangesAsync();
+
+              
+                //_oldcontext.Customers.Update(oldCustomer);
+                //await _oldcontext.SaveChangesAsync();
+
+                // Genera il token JWT per l'utente migrato
+                token = _jwtService.GenerateToken(newUser.Id.ToString(), newUser.Email);
+                if (token == null)
+                {
+                    return BadRequest($"Errore {token}");
+                }
+                return Ok(new { message = "Accesso riuscito e utente migrato nel nuovo sistema.", token });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Errore => {e.Message} \n dettagli {e.StackTrace}");
             }
 
-            // 2. Verifica se esiste nel vecchio DB (AdventureDb)
-            var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
-
-            if (oldCustomer == null)
-                return NotFound("Utente non trovato in nessun database.");
-
-            if (!BCrypt.Net.BCrypt.Verify(password, oldCustomer.PasswordHash))
-                return Unauthorized("Password errata nel vecchio database.");
-
-            // 3. Salvataggio nel nuovo DB (migrazione)
-            var newUser = new User
-            {
-                FullName = $"{oldCustomer.FirstName} {oldCustomer.LastName}",
-                Email = oldCustomer.EmailAddress!,
-                Password = oldCustomer.PasswordHash
-            };
-
-            _context.Users.Add(newUser);
-            await _context.SaveChangesAsync();
-
-            // 4. Aggiornamento flag nel vecchio DB
-            oldCustomer.IsMigrated = true;
-            _oldcontext.Customers.Update(oldCustomer);
-            await _oldcontext.SaveChangesAsync();
-
-            // Genera il token JWT per l'utente migrato
-            token = _jwtService.GenerateToken(newUser.Id.ToString(), newUser.Email);
-
-            return Ok(new { message = "Accesso riuscito e utente migrato nel nuovo sistema.", token });
         }
 
         [HttpPost("register")]
@@ -186,54 +213,54 @@ namespace Adventure19.Controllers
         {
             try
             {
-                // 1. Controllo nel nuovo DB
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-                if (existingUser != null)
+                string token = null;
+
+                // 1. Cerca nel nuovo DB (Utenti migrati)
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+                if (user != null)
                 {
-                    return Conflict("Email già registrata nel nuovo database.");
+                    // Verifica la password con BCrypt
+                    if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+                        return Unauthorized("Password errata.");
+
+                    // Genera il token JWT
+                    token = _jwtService.GenerateToken(user.Id.ToString(), user.Email);
+                    return Ok(new { message = "Accesso riuscito.", token });
                 }
 
-                // 2. Controllo nel vecchio DB
-                var existingOldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
-                if (existingOldCustomer != null)
+                // 2. Cerca nel vecchio DB (Utenti non migrati)
+                var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+                if (oldCustomer == null)
+                    return NotFound("Utente non trovato in nessun database.");
+
+                // 3. Se l'utente NON è migrato, obbliga il reset della password
+                if (!oldCustomer.IsMigrated)
                 {
-                    return Conflict("Email già esistente nel vecchio sistema. Effettua il login per migrare.");
+                    return Unauthorized("Reset Password");
                 }
 
-                // 3. Hash e salt della password
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-
-                // 4. Salva nel nuovo DB (Users)
+                // 4. Se l'utente è migrato, crea l'account nel nuovo DB e consenti l'accesso
                 var newUser = new User
                 {
-                    Email = email,
-                    Password = hashedPassword,
-                    FullName = fullName
+                    FullName = $"{oldCustomer.FirstName} {oldCustomer.LastName}",
+                    Email = oldCustomer.EmailAddress!,
+                    Password = oldCustomer.PasswordHash // la password è già stata resetata nel vecchio DB
                 };
+
+                // Aggiungi l'utente migrato al nuovo DB
                 _context.Users.Add(newUser);
                 await _context.SaveChangesAsync();
 
-                // 5. Salva nel vecchio DB (Customers)
-                var nameParts = fullName.Split(' ', 2);
-                string firstName = nameParts.Length > 0 ? nameParts[0] : fullName;
-                string lastName = nameParts.Length > 1 ? nameParts[1] : "";
-
-                var newCustomer = new Customer
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    EmailAddress = email,
-                    ModifiedDate = DateTime.UtcNow,
-
-                    IsMigrated = true, // oppure false se preferisci segnare che è nato dal nuovo sistema
-                    NameStyle = false // imposta un default
-                                      // Aggiungi altri campi obbligatori con valori default o logici
-                };
-
-                _oldcontext.Customers.Add(newCustomer);
+                // Aggiorna il flag di migrazione nel vecchio DB
+                oldCustomer.IsMigrated = true;
+                _oldcontext.Customers.Update(oldCustomer);
                 await _oldcontext.SaveChangesAsync();
 
-                return Ok("Registrazione completata con successo e sincronizzata.");
+                // Genera il token JWT per l'utente migrato
+                token = _jwtService.GenerateToken(newUser.Id.ToString(), newUser.Email);
+                return Ok(new { message = "Utente migrato e accesso riuscito.", token });
             }
             catch (Exception e)
             {
@@ -260,6 +287,63 @@ namespace Adventure19.Controllers
 
             return NoContent();
         }
+
+
+        [HttpPost("reset-password")] 
+        public async Task<IActionResult> ResetPassword(string email, string newPassword, string? currentPassword = null)
+        {
+            //Cerca prima nel nuovo DB =>utente già migrato 
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user != null)
+            {
+                // Se è currentPassword è null
+                if (string.IsNullOrEmpty(currentPassword))
+                    return BadRequest("Password attuale richiesta per il cambio password.");
+
+                if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.Password))
+                    return Unauthorized("Password attuale errata.");
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+
+                return Ok("Password aggiornata con successo.");
+            }
+
+            //  cerca nel vecchio DB
+            var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+            if (oldCustomer == null)
+                return NotFound("Utente non trovato.");
+
+            if (oldCustomer.IsMigrated)
+                return Conflict("Utente già migrato, usare cambio password."); // sicurezza extra
+
+            // Migrazione con nuova password
+            var newUser = new User
+            {
+                FullName = $"{oldCustomer.FirstName} {oldCustomer.LastName}",
+                Email = oldCustomer.EmailAddress!,
+                Password = BCrypt.Net.BCrypt.HashPassword(newPassword)
+            };
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            //  Aggiorna flag nel vecchio DB
+            oldCustomer.IsMigrated = true;
+            _oldcontext.Customers.Update(oldCustomer);
+            await _oldcontext.SaveChangesAsync();
+
+            return Ok("Password impostata e utente migrato con successo.");
+        }
+
+        [HttpPost("forgotted-password")] // Deve mandare la mail
+        //public Task<IActionResult> RequestPassword(string email)
+        //{
+            
+        //}
 
         private bool CustomerExists(int id)
         {
