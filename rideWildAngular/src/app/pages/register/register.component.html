@@ -1,1 +1,61 @@
-<p>register works!</p>
+<div class="container-fluid d-flex justify-content-center align-items-center vh-100">
+  <div class="row">
+    <form class="form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <p class="title">Register</p>
+      <p class="message">Crea il tuo account, per visualizzare i nostri prodotti</p>
+
+      <div class="flex">
+        <label>
+          <input class="input" type="text" formControlName="fullname" placeholder="">
+          <span>Nome e Cognome</span>
+        </label>
+        <div *ngIf="f['fullname'].touched && f['fullname'].invalid" class="text-danger">
+          <small *ngIf="f['fullname'].errors?.['required']">Inserisci il nome e cognome.</small>
+        </div>
+      </div>
+
+      <label>
+        <input class="input" type="date" formControlName="dataNascita" placeholder="">
+        <span>Data di nascita</span>
+      </label>
+
+      <label>
+        <input class="input" type="email" formControlName="email" placeholder="">
+        <span>Email</span>
+      </label>
+      <div *ngIf="f['email'].touched && f['email'].invalid" class="text-danger">
+        <small *ngIf="f['email'].errors?.['required']">Inserisci l'email.</small>
+        <small *ngIf="f['email'].errors?.['email']">Inserisci un'email valida.</small>
+      </div>
+
+      <label>
+        <input class="input" type="password" formControlName="password" placeholder="">
+        <span>Password</span>
+      </label>
+      <div *ngIf="f['password'].touched && f['password'].invalid" class="text-danger">
+        <small *ngIf="f['password'].errors?.['required']">Inserisci la password.</small>
+      </div>
+
+      <label>
+        <input class="input" type="password" formControlName="confermaPassword" placeholder="">
+        <span>Conferma password</span>
+      </label>
+      <div *ngIf="f['confermaPassword'].touched && f['confermaPassword'].invalid" class="text-danger">
+        <small *ngIf="f['confermaPassword'].errors?.['required']">Conferma la password.</small>
+      </div>
+      <div *ngIf="registerForm.errors?.['notMatching'] && (f['confermaPassword'].touched || f['password'].touched)" class="text-danger">
+        <small>Le password non coincidono.</small>
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger mt-2">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="submit" [disabled]="registerForm.invalid">Registrati</button>
+
+      <p class="signin">
+        Hai già un account? <a routerLink="/login">Accedi</a>
+      </p>
+    </form>
+  </div>
+</div>

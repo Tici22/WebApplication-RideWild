@@ -1,4 +1,4 @@
-/* From Uiverse.io by shadyeljokers */ 
+
 .container {
   position: relative;
   width: 400px;
@@ -168,4 +168,13 @@ label {
     width: 90%;             
     text-align: center;     
   }
+}
+
+
+.errore{
+    color: red;
+    font-size: 0.8em;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: 600;
 }
