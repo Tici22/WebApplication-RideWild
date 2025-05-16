@@ -1,7 +1,7 @@
 import {
   DOCUMENT,
   isPlatformBrowser
-} from "./chunk-KQTFN7TS.js";
+} from "./chunk-AFM5U4RT.js";
 import {
   ApplicationRef,
   Attribute,
@@ -64,7 +64,7 @@ import {
   ɵɵinject,
   ɵɵinjectAttribute,
   ɵɵstyleProp
-} from "./chunk-YIVJ2BNJ.js";
+} from "./chunk-PR7ILNDV.js";
 
 // node_modules/@angular/common/fesm2022/location-DpBxd_aX.mjs
 var _DOM = null;
@@ -5118,4 +5118,4 @@ export {
    * License: MIT
    *)
 */
-//# sourceMappingURL=chunk-UTW4XORV.js.map
+//# sourceMappingURL=chunk-3B7AEY7J.js.map

@@ -2,13 +2,13 @@
   <div class="container-fluid">
     <!-- Logo e Titolo -->
 
-    <img src="/images/logo.png" alt="Logo" class="navbar-logo" (click)="goTo('/home')" />
+    <img src="/images/logo.png" alt="Logo" class="navbar-logo" routerLink="/home" (click)="toggleMenu()" />
 
 
     <div class="col-12 col-md-4 d-flex justify-content-center navbar-center ">
-      <a class="navbar-brand nav-start" (click)="goTo('/home')">Home</a>
-      <a class="navbar-brand nav-start" (click)="goTo('/about')">Chi siamo</a>
-      <a class="navbar-brand nav-start" (click)="goTo('/contatti')">Contatti</a>
+      <a class="navbar-brand nav-start" routerLink="/home">Home</a>
+      <a class="navbar-brand nav-start" routerLink="/about">Chi siamo</a>
+      <a class="navbar-brand nav-start" routerLink="/contatti">Contatti</a>
     </div>
 
     <!-- Bottone -->
@@ -74,13 +74,13 @@
       <div class="col-6 ">
         <ul class="navbar-nav justify-content-end flex-grow-1 navbar-links d-md-none ">
           <li class="nav-item">
-            <a class="nav-link" (click)="goTo('/home')">Home</a>
+            <a class="nav-link" routerLink="/home" data-bs-dismiss="offcanvas">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" (click)="goTo('/about')">Chi siamo</a>
+            <a class="nav-link" routerLink="/about" data-bs-dismiss="offcanvas">Chi siamo</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" (click)="goTo('/contatti')">Contatti</a>
+            <a class="nav-link" routerLink="/contatti" data-bs-dismiss="offcanvas">Contatti</a>
           </li>
         </ul>
       </div>
@@ -88,13 +88,13 @@
       <div class="col-6 col-md-12 settings">
         <ul class="navbar-nav justify-content-end flex-grow-1  navbar-links ">
           <li class="nav-item">
-            <a class="nav-link" (click)="goTo('/login')">Login</a>
+            <a class="nav-link" routerLink="/login" data-bs-dismiss="offcanvas">Login</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" (click)="goTo('/register')">Registrati</a>
+            <a class="nav-link" routerLink="/register" data-bs-dismiss="offcanvas">Registrati</a> 
           </li>
           <li class="nav-item">
-            <a class="nav-link cart" (click)="goTo('/Cart')">Carrello 🛒</a>
+            <a class="nav-link cart" routerLink="/cart" data-bs-dismiss="offcanvas">Carrello 🛒</a>
             <span *ngIf="cartCount > 0" class="cart-count">{{ cartCount }}</span>
           </li>
         </ul>

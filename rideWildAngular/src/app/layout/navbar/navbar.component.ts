@@ -1,34 +1,27 @@
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-
 export class NavbarComponent {
   isScrolled = false;
   isMenuOpen = false;
-  cartCount = 0; 
-
-  constructor(private router: Router) { }
+  cartCount = 0;
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
-  goTo(path: string) {
-    this.router.navigate([path]);
-    this.isMenuOpen = false;
-  }
+  
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
     this.isScrolled = window.scrollY > 50;
   }
-
 }
