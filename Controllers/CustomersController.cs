@@ -133,92 +133,82 @@ namespace Adventure19.Controllers
 
             return NoContent();
         }
-        //POST : api/Customers/login
+        // POST : api/Customers/login
+        /// Login dell'utente:
+        /// 1. Controlla se l'utente esiste nel nuovo DB (AuthDbContext). Se sì, verifica la password.
+        /// 2. Se non esiste nel nuovo DB, controlla nel vecchio DB (AdventureWorksLt2019Context).
+        /// 3. Se esiste nel vecchio DB e non è migrato, indica ad angular di avviare un set nuova password.
+        /// 4. Se esiste nel vecchio DB ed è flaggato come migrato, ma non è nel nuovo DB: Conflict: error 409.
 
-        /// <summary>
-        /// Il metodo Login verifica se l'utente esiste nel nuovo Db(AuthDB) e viene trovato
-        /// verifica la corrispondenza della password con BCrypt, se errata restituisce l'errore
-        /// In caso di corrispondenza genera il token JWT e lo restituisce, con un messaggio di accesso riuscito
-        /// Verifica se esiste nel vecchio DB (AdventureDb) e se non esiste restituisce l'errore
-        /// Se esiste nel vecchio DB, verifica se l'utente è migrato, se non è migrato restituisce errore
-        /// Se dice che è migrato=> Vuol dire che non è stato salvato nel nuovo db e lo salva
-        /// 
         [HttpPost("login")]
         public async Task<IActionResult> Login(string email, string password)
         {
+            // MODIFICA: Validazione base per i parametri di input
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                return BadRequest(new { message = "Email e password sono obbligatori." });
+            }
+
             try
             {
-                string token = null;
-                //  Verifica se esiste nel nuovo DB 
+                
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
                 if (user != null)
                 {
-                    // Verifica la password con BCrypt
                     if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
-                        return Unauthorized("Password errata.");
-
-                    // Genera il token JWT per l'utente
-                    token = _jwtService.GenerateToken(user.Id.ToString(), user.Email);
-
+                    {
+                        return Unauthorized(new { message = "Credenziali non valide." });
+                    }
+                    var token = _jwtService.GenerateToken(user.Id.ToString(), user.Email);
                     return Ok(new { message = "Accesso riuscito.", token });
                 }
 
-                //  Verifica se esiste nel vecchio DB (AdventureDb)
                 var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
 
                 if (oldCustomer == null)
-                    return NotFound("Utente non trovato in nessun database.");
+                {
+                    return Unauthorized(new { message = "Credenziali non valide." });
+                }
 
                 if (!oldCustomer.IsMigrated)
                 {
-                    return Unauthorized("Reset Password");
+                    // MODIFICA: L'utente deve impostare una nuova password (migrazione forzata).
+                    // Restituisce Conflict (409) per indicare al frontend un'azione specifica.
+                    return Conflict(new
+                    {
+                        message = "Il tuo account necessita di un aggiornamento. Per favore, imposta una nuova password.",
+                        action = "migrate_password" // Codice da fare frontend
+                    });
                 }
-                if (oldCustomer.IsMigrated && user == null) // => Se l'utente è migrato ma non esiste nel nuovo DB (Da fare => Rocco)
+                else // oldCustomer.IsMigrated == true, MA user == null (non c'è nel nuovo DB) non serve altro if. 
                 {
-
-                    return Unauthorized("L'utente è segnalato come Migrato => Ma non lo è!");
+                    return StatusCode(StatusCodes.Status500InternalServerError, new
+                    {
+                        message = "Si è verificato un errore durante il tentativo di accesso. L'account potrebbe non essere stato migrato correttamente. Contattare l'assistenza.",
+                        code = "MIGRATION_INCOMPLETE"
+                    });
                 }
-                //  Salvataggio nel nuovo DB (migrazione)
-                var newUser = new User
-                {
-                    FullName = $"{oldCustomer.FirstName} {oldCustomer.LastName}",
-                    Email = oldCustomer.EmailAddress!,
-                    Password = oldCustomer.PasswordHash
-                };
-
-                _context.Users.Add(newUser);
-                await _context.SaveChangesAsync();
-
-
-                //_oldcontext.Customers.Update(oldCustomer);
-                //await _oldcontext.SaveChangesAsync();
-
-                // Genera il token JWT per l'utente migrato
-                token = _jwtService.GenerateToken(newUser.Id.ToString(), newUser.Email);
-                if (token == null)
-                {
-                    return BadRequest($"Errore {token}");
-                }
-                return Ok(new { message = "Accesso riuscito e utente migrato nel nuovo sistema.", token });
+                // MODIFICA: Rimosso 'newUser' perché la logica era errata, la migrazione deve avvenire tramite un set nuova password .
             }
             catch (Exception e)
             {
-                return StatusCode(500, $"Errore => {e.Message} \n dettagli {e.StackTrace}");
+                Console.WriteLine($"Errore imprevisto Login: {e.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Errore interno del server durante il login. Riprova più tardi." });
             }
-
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(string email, string password, string fullname, string date)
+        public async Task<IActionResult> Register([FromQuery]string email, [FromQuery] string password, [FromQuery] string fullname, [FromQuery] string date)
         {
             try
             {
-                //Conversione della data in DateOnly
-                if (!DateOnly.TryParseExact(date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
+                ////Conversione della data in DateOnly
+                if (!DateOnly.TryParse(date, out var parsedDate))
                 {
-                    return BadRequest("Formato data non valido. Usa gg/MM/yyyy.");
+                    return BadRequest("Formato data non valido. Usa yyyy-MM-dd.");
                 }
+
 
 
 
@@ -270,9 +260,9 @@ namespace Adventure19.Controllers
                 }
                 await _oldcontext.SaveChangesAsync(); // Salvataggio nel vecchio DB
 
-                var token = _jwtService.GenerateToken(newUser.Id.ToString(), newUser.Email);
+                
 
-                return Ok(new { message = "Registrazione riuscita.", token });
+                return Ok(new { message = "Registrazione riuscita." });
 
 
             }
