@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../services/product.service/auth.service';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -12,15 +13,16 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     ReactiveFormsModule,
     CommonModule,
-    FormsModule
+    FormsModule,
   ],
 })
 export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService) {
     this.registerForm = this.fb.group({
+      date: ['', Validators.required],
       fullname: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
@@ -48,33 +50,30 @@ export class RegisterComponent {
       return;
     }
 
+    
+
     const data = {
       email: this.registerForm.value.email,
       password: this.registerForm.value.password,
       fullname: this.registerForm.value.fullname,
-      date: this.registerForm.value.date, 
+      date: this.registerForm.value.date,
     };
 
-    this.http.post('https://localhost:7055/api/customers/register', data).subscribe({
-      next: (res: any) => {
-        console.log('Registrazione riuscita', res);
+    this.authService.register(data.email, data.password, data.fullname, data.date).subscribe({
+      next: (response: any) => {
+        console.log('Registrazione avvenuta con successo:', response);
         this.errorMessage = '';
-        // naviga o altro
+        // Redirect or show success message
       },
-      error: (err) => {
-        console.error('Errore nella registrazione:', err);
-        if (err.error) {
-          if (typeof err.error === 'string') {
-            this.errorMessage = err.error;
-          } else if (err.error.message) {
-            this.errorMessage = err.error.message;
-          } else {
-            this.errorMessage = 'Errore nella registrazione: dati non validi.';
-          }
+      error: (error) => {
+        console.error('Errore durante la registrazione:', error);
+        if (error.status === 400) {
+          this.errorMessage = 'Email già in uso.';
         } else {
-          this.errorMessage = 'Errore nella registrazione.';
+          this.errorMessage = 'Errore di sistema, riprova più tardi.';
+          // Fra se vuoi aggiungere un errore o altri fai pure
         }
       }
-    });
+  });
   }
 }

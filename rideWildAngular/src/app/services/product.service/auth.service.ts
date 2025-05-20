@@ -24,12 +24,12 @@ export class AuthService {
     );
   }
 
-  register(email: string, password: string, fullname: string): Observable<string> {
+  register(email: string, password: string, fullname: string, date: string): Observable<any> {
     const params = new HttpParams()
       .set('email', email)
       .set('password', password)
       .set('fullName', fullname)
-
+      .set('date',date)
 
     return this.http.post<string>(
       `${this.baseApiUrl}/register`,
