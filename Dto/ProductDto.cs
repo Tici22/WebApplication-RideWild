@@ -1,4 +1,6 @@
-﻿namespace Adventure19.Dto
+﻿using Adventure19.Models;
+
+namespace Adventure19.Dto
 {
     public class ProductDto
     {
@@ -18,6 +20,8 @@
 
         public Guid Rowguid { get; set; }
         public DateTime ModifiedDate { get; set; }
+
+       public List<ProductCategory>? ProductCategories { get; set; }
     }
 
 }

@@ -161,7 +161,9 @@ namespace Adventure19.Controllers
                         return Unauthorized(new { message = "Credenziali non valide." });
                     }
                     var token = _jwtService.GenerateToken(user.Id.ToString(), user.Email);
-                    return Ok(new { message = "Accesso riuscito.", token });
+                    var fullname = user.FullName;
+                    return Ok(new { message = "Accesso riuscito.", token,fullname
+                    });
                 }
 
                 var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
@@ -366,6 +368,7 @@ namespace Adventure19.Controllers
                 // Genera codice 8 cifre
                 var random = new Random();
                 var code = random.Next(10000000, 99999999).ToString();
+
 
                 // Salva codice temporaneo
                 PasswordResetStore.ResetCodes[email] = code;

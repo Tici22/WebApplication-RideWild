@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Adventure19.Models;
 using Adventure19.Dto;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Adventure19.Controllers
 {
@@ -150,6 +151,8 @@ namespace Adventure19.Controllers
             return NoContent();
         }
 
+
+        
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.ProductId == id);
