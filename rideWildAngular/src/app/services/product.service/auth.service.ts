@@ -12,12 +12,12 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(email: string, password: string): Observable<{ message: string; token: string }> {
+  login(email: string, password: string): Observable<{ message: string; token: string; fullname: string }> {
     const params = new HttpParams()
       .set('email', email)
       .set('password', password);
 
-    return this.http.post<{ message: string; token: string }>(
+    return this.http.post<{ message: string; token: string; fullname: string }>(
       `${this.baseApiUrl}/login`,
       null,
       { params }

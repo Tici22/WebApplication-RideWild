@@ -178,3 +178,44 @@ label {
     margin-top: 10px;
     font-weight: 600;
 }
+
+
+/* From Uiverse.io by SelfMadeSystem */ 
+.loader {
+  position: fixed;       /* full screen */
+  top: 0;
+  left: 0;
+  width: 100vw;          /* tutta la larghezza viewport */
+  height: 100vh;         /* tutta l'altezza viewport */
+  background-color: #000; /* schermo nero */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;         /* sopra tutto */
+  user-select: none;     /* niente selezione testo */
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.absolute {
+  position: absolute;
+  visibility: hidden;
+}
+
+/* Stroke animation */
+.dash {
+  animation: dashArray 2s ease-in-out infinite, dashOffset 2s linear infinite;
+}
+
+@keyframes dashArray {
+  0% { stroke-dasharray: 0 1 359 0; }
+  50% { stroke-dasharray: 0 359 1 0; }
+  100% { stroke-dasharray: 359 1 0 0; }
+}
+
+@keyframes dashOffset {
+  0% { stroke-dashoffset: 365; }
+  100% { stroke-dashoffset: 5; }
+}
