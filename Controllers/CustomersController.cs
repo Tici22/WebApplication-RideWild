@@ -151,7 +151,7 @@ namespace Adventure19.Controllers
 
             try
             {
-                
+
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
                 if (user != null)
@@ -199,11 +199,11 @@ namespace Adventure19.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromQuery]string email, [FromQuery] string password, [FromQuery] string fullname, [FromQuery] string date)
+        public async Task<IActionResult> Register([FromQuery] string email, [FromQuery] string password, [FromQuery] string fullname, [FromQuery] string date)
         {
             try
             {
-                ////Conversione della data in DateOnly
+                //Conversione della data in DateOnly
                 if (!DateOnly.TryParse(date, out var parsedDate))
                 {
                     return BadRequest("Formato data non valido. Usa yyyy-MM-dd.");
@@ -248,6 +248,7 @@ namespace Adventure19.Controllers
                         IsMigrated = true, // Flag per indicare che è migrato
                         NameStyle = false,
                         ModifiedDate = DateTime.Now
+
                     };
                     _oldcontext.Customers.Add(newCustomer);
                 }
@@ -260,7 +261,7 @@ namespace Adventure19.Controllers
                 }
                 await _oldcontext.SaveChangesAsync(); // Salvataggio nel vecchio DB
 
-                
+
 
                 return Ok(new { message = "Registrazione riuscita." });
 
@@ -273,81 +274,87 @@ namespace Adventure19.Controllers
         }
 
 
+        //[HttpPut("update")]
+        //public async Task<IActionResult> UpdateCustomer()
+        //{
+        //    return BadRequest("Non implementato");
+        //}
 
+        // DELETE: api/Customers/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCustomer(int id)
+        {
+            var customer = await _oldcontext.Customers
+        .Include(c => c.CustomerAddresses)
+        .FirstOrDefaultAsync(c => c.CustomerId == id);
 
-            // DELETE: api/Customers/5
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> DeleteCustomer(int id)
+            if (customer == null)
             {
-                var customer = await _oldcontext.Customers
-            .Include(c => c.CustomerAddresses)
-            .FirstOrDefaultAsync(c => c.CustomerId == id);
-
-                if (customer == null)
-                {
-                    return NotFound();
-                }
-
-                customer.CustomerAddresses.Clear();
-                _oldcontext.Customers.Remove(customer);
-                await _oldcontext.SaveChangesAsync();
-
-                return NoContent();
+                return NotFound();
             }
 
+            customer.CustomerAddresses.Clear();
+            _oldcontext.Customers.Remove(customer);
+            await _oldcontext.SaveChangesAsync();
 
-            [HttpPost("reset-password")]
-            public async Task<IActionResult> ResetPassword(string email, string newPassword, string? currentPassword = null)
+            return NoContent();
+        }
+
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(string email, string newPassword, string? currentPassword = null)
+        {
+            //Cerca prima nel nuovo DB =>utente già migrato 
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user != null)
             {
-                //Cerca prima nel nuovo DB =>utente già migrato 
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                // Se è currentPassword è null
+                if (string.IsNullOrEmpty(currentPassword))
+                    return BadRequest("Password attuale richiesta per il cambio password.");
 
-                if (user != null)
-                {
-                    // Se è currentPassword è null
-                    if (string.IsNullOrEmpty(currentPassword))
-                        return BadRequest("Password attuale richiesta per il cambio password.");
+                if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.Password))
+                    return Unauthorized("Password attuale errata.");
 
-                    if (!BCrypt.Net.BCrypt.Verify(currentPassword, user.Password))
-                        return Unauthorized("Password attuale errata.");
-
-                    user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
-                    _context.Users.Update(user);
-                    await _context.SaveChangesAsync();
-
-                    return Ok("Password aggiornata con successo.");
-                }
-
-                //  cerca nel vecchio DB
-                var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
-
-                if (oldCustomer == null)
-                    return NotFound("Utente non trovato.");
-
-                if (oldCustomer.IsMigrated)
-                    return Conflict("Utente già migrato, usare cambio password."); // sicurezza extra
-
-                // Migrazione con nuova password
-                var newUser = new User
-                {
-                    FullName = $"{oldCustomer.FirstName} {oldCustomer.LastName}",
-                    Email = oldCustomer.EmailAddress!,
-                    Password = BCrypt.Net.BCrypt.HashPassword(newPassword)
-                };
-
-                _context.Users.Add(newUser);
+                user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
-                //  Aggiorna flag nel vecchio DB
-                oldCustomer.IsMigrated = true;
-                _oldcontext.Customers.Update(oldCustomer);
-                await _oldcontext.SaveChangesAsync();
-
-                return Ok("Password impostata e utente migrato con successo.");
+                return Ok("Password aggiornata con successo.");
             }
 
-            [HttpPost("forgotted-password")]
-            public async Task<IActionResult> ForgotPassword([FromServices] EmailService emailService, string email)
+            //  cerca nel vecchio DB
+            var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+            if (oldCustomer == null)
+                return NotFound("Utente non trovato.");
+
+            if (oldCustomer.IsMigrated)
+                return Conflict("Utente già migrato, usare cambio password."); // sicurezza extra
+
+            // Migrazione con nuova password
+            var newUser = new User
+            {
+                FullName = $"{oldCustomer.FirstName} {oldCustomer.LastName}",
+                Email = oldCustomer.EmailAddress!,
+                Password = BCrypt.Net.BCrypt.HashPassword(newPassword)
+            };
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            //  Aggiorna flag nel vecchio DB
+            oldCustomer.IsMigrated = true;
+            _oldcontext.Customers.Update(oldCustomer);
+            await _oldcontext.SaveChangesAsync();
+
+            return Ok("Password impostata e utente migrato con successo.");
+        }
+
+        [HttpPost("forgotted-password")]
+        public async Task<IActionResult> ForgotPassword([FromServices] EmailService emailService, string email)
+        {
+            try
             {
                 // Verifica se esiste nei DB
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -368,53 +375,58 @@ namespace Adventure19.Controllers
 
                 return Ok("Codice di verifica inviato via email.");
             }
-
-            [HttpPost("verify-code-and-reset")]
-            public async Task<IActionResult> VerifyCodeAndReset(string email, string code, string newPassword, string fullName = "")
+            catch (Exception e)
             {
-                if (!PasswordResetStore.ResetCodes.ContainsKey(email))
-                    return NotFound("Nessuna richiesta di reset trovata per questa email.");
+                return BadRequest($"Errore => {e.Message} \n dettagli {e.StackTrace}");
 
-                if (PasswordResetStore.ResetCodes[email] != code)
-                    return Unauthorized("Codice non valido.");
-
-                PasswordResetStore.ResetCodes.Remove(email); // rimuovi codice usato
-
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-
-                if (user != null)
-                {
-                    user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
-                    _context.Users.Update(user);
-                    await _context.SaveChangesAsync();
-                    return Ok("Password aggiornata con successo.");
-                }
-
-                var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
-
-                if (oldCustomer == null)
-                    return NotFound("Utente non trovato.");
-
-                if (oldCustomer.IsMigrated)
-                    return Conflict("Utente già migrato. Riprovare login/reset nel nuovo sistema.");
-
-                // Migrazione con nuova password
-                var newUser = new User
-                {
-                    FullName = string.IsNullOrWhiteSpace(fullName) ? $"{oldCustomer.FirstName} {oldCustomer.LastName}" : fullName,
-                    Email = oldCustomer.EmailAddress!,
-                    Password = BCrypt.Net.BCrypt.HashPassword(newPassword)
-                };
-
-                _context.Users.Add(newUser);
-                await _context.SaveChangesAsync();
-
-                oldCustomer.IsMigrated = true;
-                _oldcontext.Customers.Update(oldCustomer);
-                await _oldcontext.SaveChangesAsync();
-
-                return Ok("Password aggiornata e utente migrato con successo.");
             }
+        }
+        [HttpPost("verify-code-and-reset")]
+        public async Task<IActionResult> VerifyCodeAndReset(string email, string code, string newPassword, string fullName = "")
+        {
+            if (!PasswordResetStore.ResetCodes.ContainsKey(email))
+                return NotFound("Nessuna richiesta di reset trovata per questa email.");
+
+            if (PasswordResetStore.ResetCodes[email] != code)
+                return Unauthorized("Codice non valido.");
+
+            PasswordResetStore.ResetCodes.Remove(email); // rimuovi codice usato
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user != null)
+            {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+                return Ok("Password aggiornata con successo.");
+            }
+
+            var oldCustomer = await _oldcontext.Customers.FirstOrDefaultAsync(c => c.EmailAddress == email);
+
+            if (oldCustomer == null)
+                return NotFound("Utente non trovato.");
+
+            if (oldCustomer.IsMigrated)
+                return Conflict("Utente già migrato. Riprovare login/reset nel nuovo sistema.");
+
+            // Migrazione con nuova password
+            var newUser = new User
+            {
+                FullName = string.IsNullOrWhiteSpace(fullName) ? $"{oldCustomer.FirstName} {oldCustomer.LastName}" : fullName,
+                Email = oldCustomer.EmailAddress!,
+                Password = BCrypt.Net.BCrypt.HashPassword(newPassword)
+            };
+
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            oldCustomer.IsMigrated = true;
+            _oldcontext.Customers.Update(oldCustomer);
+            await _oldcontext.SaveChangesAsync();
+
+            return Ok("Password aggiornata e utente migrato con successo.");
+        }
 
         private bool CustomerExists(int id)
         {

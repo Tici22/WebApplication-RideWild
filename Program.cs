@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Adventure19.Services;
+using Adventure19.Util;
 
 namespace Adventure19
 {
@@ -38,7 +39,7 @@ namespace Adventure19
 
             //Registrazione del servizio JwtService
             builder.Services.AddScoped<JwtService>();
-
+            
             //  JWT Authentication
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -61,6 +62,11 @@ namespace Adventure19
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddOpenApi();
+
+
+            //  Registrazione del servizio EmailService
+            builder.Services.AddSingleton<EmailService>();
+
 
             var app = builder.Build();
 
