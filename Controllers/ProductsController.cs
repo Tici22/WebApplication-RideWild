@@ -152,10 +152,43 @@ namespace Adventure19.Controllers
         }
 
 
-        
+        [HttpGet("by-category/{productCategory}")]
+        public async Task<IActionResult> GetProductsForCategory(int productCategory)
+        {
+            var products = await _context.Products
+                .Where(p => p.ProductCategory != null && p.ProductCategory.ParentProductCategoryId == productCategory)
+                .Select(p => new ProductDto
+                {
+                    Name = p.Name
+
+                }).ToListAsync();
+
+            return Ok(products);
+        }
+
+
+        [HttpGet("by-parent/{parentId}")]
+        public async Task<IActionResult> GetByParentCategory(int parentId)
+        {
+            var result = await _context.ProductCategories
+                .Where(p => p.ParentProductCategoryId == parentId) // Fix CS1061: Correct property name
+                .Where(p => _context.Products
+                            .Any(s => s.ProductCategoryId == p.ProductCategoryId)) // Fix CS8602: Check for null reference
+                .GroupBy(p => new { p.ParentProductCategoryId, p.Name }) // Fix CS1061: Correct property name
+                .Select(g => new
+                {
+                    
+                    g.Key.Name
+                })
+                .ToListAsync();
+
+            return Ok(result);
+        }
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.ProductId == id);
         }
+
+
     }
 }
