@@ -14,6 +14,7 @@ namespace Adventure19.Dto
         public decimal? Weight { get; set; }
         public int? ProductCategoryId { get; set; }
         public int? ProductModelId { get; set; }
+        public string ? ProductModelName { get; set; }
         public DateTime SellStartDate { get; set; }
         public DateTime? SellEndDate { get; set; }
         public DateTime? DiscontinuedDate { get; set; }
@@ -22,6 +23,8 @@ namespace Adventure19.Dto
         public DateTime ModifiedDate { get; set; }
 
        public List<ProductCategory>? ProductCategories { get; set; }
+
+        
     }
 
 }

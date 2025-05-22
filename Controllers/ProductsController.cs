@@ -16,10 +16,11 @@ namespace Adventure19.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly AdventureWorksLt2019Context _context;
-
-        public ProductsController(AdventureWorksLt2019Context context)
+        private readonly ILogger<ProductsController> _logger;
+        public ProductsController(AdventureWorksLt2019Context context, ILogger<ProductsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/Products?pageNumber=1&pageSize=20
@@ -54,7 +55,7 @@ namespace Adventure19.Controllers
                     ModifiedDate = p.ModifiedDate
                 })
                 .ToListAsync(); 
-
+            _logger.LogInformation($"Trovati {productsDto.Count} products from the database.");
             return Ok(productsDto); 
         }
 
@@ -151,7 +152,6 @@ namespace Adventure19.Controllers
             return NoContent();
         }
 
-
         [HttpGet("by-category/{productCategory}")]
         public async Task<IActionResult> GetProductsForCategory(int productCategory)
         {
@@ -159,14 +159,24 @@ namespace Adventure19.Controllers
                 .Where(p => p.ProductCategory != null && p.ProductCategory.ParentProductCategoryId == productCategory)
                 .Select(p => new ProductDto
                 {
-                    Name = p.Name
-
+                    ProductId = p.ProductId,
+                    Name = p.Name,
+                    ProductNumber = p.ProductNumber,
+                    Color = p.Color,
+                    Size = p.Size,
+                    StandardCost = p.StandardCost,
+                    ListPrice = p.ListPrice,
+                    ProductModelId = p.ProductModelId,
+                    SellStartDate = p.SellStartDate,
+                    SellEndDate = p.SellEndDate,
+                    DiscontinuedDate = p.DiscontinuedDate,
+                    ProductModelName = p.ProductModel != null ? p.ProductModel.Name : "Nessuna Categoria",
                 }).ToListAsync();
 
             return Ok(products);
         }
-
-
+        
+        //
         [HttpGet("by-parent/{parentId}")]
         public async Task<IActionResult> GetByParentCategory(int parentId)
         {
@@ -177,7 +187,6 @@ namespace Adventure19.Controllers
                 .GroupBy(p => new { p.ParentProductCategoryId, p.Name }) // Fix CS1061: Correct property name
                 .Select(g => new
                 {
-                    
                     g.Key.Name
                 })
                 .ToListAsync();
