@@ -29,6 +29,7 @@ public class EmailService
 }
 public static class PasswordResetStore
 {
-    public static Dictionary<string, string> ResetCodes = new(); // email -> codice
+    public static Dictionary<string, (string Code, DateTime CreatedAt)> ResetCodes
+        = new Dictionary<string, (string, DateTime)>(); // email -> codice
 }
 

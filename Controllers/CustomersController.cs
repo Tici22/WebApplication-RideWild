@@ -271,7 +271,7 @@ namespace Adventure19.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(500, $"Errore => {e.Message} \n dettagli {e.StackTrace}");
+                 return BadRequest(e.InnerException?.Message ?? e.Message);
             }
         }
 
@@ -371,7 +371,7 @@ namespace Adventure19.Controllers
 
 
                 // Salva codice temporaneo
-                PasswordResetStore.ResetCodes[email] = code;
+                PasswordResetStore.ResetCodes[email] = (code, DateTime.UtcNow);
 
                 // Invia email
                 await emailService.SendEmailAsync(email, "Codice recupero password", $"Il tuo codice di verifica è: {code}");
@@ -384,14 +384,25 @@ namespace Adventure19.Controllers
 
             }
         }
+
+
         [HttpPost("verify-code-and-reset")]
         public async Task<IActionResult> VerifyCodeAndReset(string email, string code, string newPassword, string fullName = "")
         {
             if (!PasswordResetStore.ResetCodes.ContainsKey(email))
                 return NotFound("Nessuna richiesta di reset trovata per questa email.");
 
-            if (PasswordResetStore.ResetCodes[email] != code)
+            var (storedCode, createdAt) = PasswordResetStore.ResetCodes[email];
+            Console.WriteLine(createdAt);
+
+            if (storedCode != code)
                 return Unauthorized("Codice non valido.");
+            // Verifica scadenza del codice (2 minuti)
+            if (DateTime.UtcNow - createdAt > TimeSpan.FromMinutes(1))
+            {
+                PasswordResetStore.ResetCodes.Remove(email);
+                return Unauthorized("Codice scaduto. Richiedi un nuovo reset.");
+            }
 
             PasswordResetStore.ResetCodes.Remove(email); // rimuovi codice usato
 
