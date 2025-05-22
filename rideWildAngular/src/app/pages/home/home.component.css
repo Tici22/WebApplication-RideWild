@@ -1,19 +1,18 @@
 
 
 .imgHeader {
-  background: url('../../../assets/images/Header.png');
+  background: url('../../../assets/images/Header.jpg');
   min-height: 100vh;
-  background-size: contain;
+  width: 100%;
+  background-size: cover; 
   background-position: center;
   background-repeat: no-repeat;
-  margin-top: 50px;
-  padding: 0;
 }
 
 .sigla {
     position: absolute;
     top: 25%;
-    left: 65%;
+    left: 75%;
     transform: translate(-50%, -50%);
     color: white;
     font-size: 150px;

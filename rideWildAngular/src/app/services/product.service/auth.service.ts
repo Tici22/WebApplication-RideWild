@@ -28,7 +28,7 @@ export class AuthService {
     const params = new HttpParams()
       .set('email', email)
       .set('password', password)
-      .set('fullName', fullname)
+      .set('fullname', fullname)
       .set('date',date)
 
     return this.http.post<string>(

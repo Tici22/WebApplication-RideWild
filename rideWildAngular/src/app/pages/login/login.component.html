@@ -1,73 +1,72 @@
 <div *ngIf="isLoading" class="loader">
-        <!-- Gradienti -->
-        <svg height="0" width="0" class="absolute">
-            <defs>
-                <linearGradient id="b" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#973BED" />
-                    <stop offset="100%" stop-color="#007CFF" />
-                </linearGradient>
-                <linearGradient id="c" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#FFC800" />
-                    <stop offset="100%" stop-color="#FF00FF" />
-                    <animateTransform attributeName="gradientTransform" type="rotate" from="0 32 32" to="360 32 32"
-                        dur="8s" repeatCount="indefinite" />
-                </linearGradient>
-                <linearGradient id="d" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#00E0ED" />
-                    <stop offset="100%" stop-color="#00DA72" />
-                </linearGradient>
-            </defs>
-        </svg>
+    <svg height="0" width="0" class="absolute">
+        <defs>
+            <linearGradient id="b" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#973BED" />
+                <stop offset="100%" stop-color="#007CFF" />
+            </linearGradient>
+            <linearGradient id="c" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FFC800" />
+                <stop offset="100%" stop-color="#FF00FF" />
+                <animateTransform attributeName="gradientTransform" type="rotate" from="0 32 32" to="360 32 32" dur="8s"
+                    repeatCount="indefinite" />
+            </linearGradient>
+            <linearGradient id="d" x1="0" y1="0" x2="0" y2="64" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00E0ED" />
+                <stop offset="100%" stop-color="#00DA72" />
+            </linearGradient>
+        </defs>
+    </svg>
 
-        <!-- R -->
-        <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
-            <path stroke="url(#b)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                d="M 10 60 L 10 4 L 38 4 Q 54 4 54 24 Q 54 34 46 38 L 38 40 L 54 60 L 44 60 L 28 42 L 18 42 L 18 60 Z"
-                class="dash" pathLength="360" />
-        </svg>
+    <!-- R -->
+    <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
+        <path stroke="url(#b)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+            d="M 10 60 L 10 4 L 38 4 Q 54 4 54 24 Q 54 34 46 38 L 38 40 L 54 60 L 44 60 L 28 42 L 18 42 L 18 60 Z"
+            class="dash" pathLength="360" />
+    </svg>
 
-        <!-- I -->
-        <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
-            <path stroke="url(#b)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 32 4 L 32 60"
-                class="dash" pathLength="360" />
-        </svg>
+    <!-- I -->
+    <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
+        <path stroke="url(#b)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 32 4 L 32 60"
+            class="dash" pathLength="360" />
+    </svg>
 
-        <!-- D -->
-        <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
-            <path stroke="url(#b)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                d="M 16 8 L 16 56 Q 48 56 48 32 Q 48 8 16 8 Z" class="dash" pathLength="360" />
-        </svg>
+    <!-- D -->
+    <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
+        <path stroke="url(#b)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+            d="M 16 8 L 16 56 Q 48 56 48 32 Q 48 8 16 8 Z" class="dash" pathLength="360" />
+    </svg>
 
-        <!-- E -->
-        <svg viewBox="0 0 64 64" width="64" height="60" class="inline-block">
-            <path stroke="url(#b)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                d="M 10 12 H 50 V 20 H 18 V 32 H 50 V 40 H 18 V 52 H 50 V 60 H 10 Z" class="dash" pathLength="760" />
-        </svg>
+    <!-- E -->
+    <svg viewBox="0 0 64 64" width="64" height="60" class="inline-block">
+        <path stroke="url(#b)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"
+            d="M 10 12 H 50 V 20 H 18 V 32 H 50 V 40 H 18 V 52 H 50 V 60 H 10 Z" class="dash" pathLength="760" />
+    </svg>
 
-        <!-- W -->
-        <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
-            <path stroke="url(#d)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                d="M 4 4 L 16 60 L 32 32 L 48 60 L 60 4" class="dash" pathLength="360" />
-        </svg>
+    <!-- W -->
+    <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
+        <path stroke="url(#d)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+            d="M 4 4 L 16 60 L 32 32 L 48 60 L 60 4" class="dash" pathLength="360" />
+    </svg>
 
-        <!-- I -->
-        <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
-            <path stroke="url(#d)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 32 4 L 32 60"
-                class="dash" pathLength="360" />
-        </svg>
+    <!-- I -->
+    <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
+        <path stroke="url(#d)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" d="M 32 4 L 32 60"
+            class="dash" pathLength="360" />
+    </svg>
 
-        <!-- L -->
-        <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
-            <path stroke="url(#d)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                d="M 10 4 L 10 60 L 54 60" class="dash" pathLength="360" />
-        </svg>
+    <!-- L -->
+    <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
+        <path stroke="url(#d)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+            d="M 10 4 L 10 60 L 54 60" class="dash" pathLength="360" />
+    </svg>
 
-        <!-- D -->
-        <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
-            <path stroke="url(#d)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
-                d="M 16 8 L 16 56 Q 48 56 48 32 Q 48 8 16 8 Z" class="dash" pathLength="360" />
-        </svg>
-    </div>
+    <!-- D -->
+    <svg viewBox="0 0 64 64" width="64" height="64" class="inline-block">
+        <path stroke="url(#d)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"
+            d="M 16 8 L 16 56 Q 48 56 48 32 Q 48 8 16 8 Z" class="dash" pathLength="360" />
+    </svg>
+</div> 
 
 
 

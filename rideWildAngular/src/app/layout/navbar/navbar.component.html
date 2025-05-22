@@ -1,106 +1,105 @@
-<nav class="navbar navbar navbar-dark bg-dark fixed-top" [class.scrolled]="isScrolled">
-  <div class="container-fluid">
-    <!-- Logo e Titolo -->
+<div class="container-fluid navbar navbar-expand-lg fixed-top"
+  [ngClass]="{ 'scrolled': isScrolled, 'hide': hideNavbar }">
+  <a class="logo" [routerLink]="['/home']"></a>
 
-    <img src="/images/logo.png" alt="Logo" class="navbar-logo" routerLink="/home" (click)="toggleMenu()" />
-    <button class="logout-button" (click)="logout()">Logout</button>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll"
+    aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
+  <div class="collapse navbar-collapse justify-content-between" id="navbarScroll">
+    <ul class="navbar-nav">
+      <!-- Se vuoi altre voci a sinistra, mettile qui -->
+    </ul>
 
-    <div class="col-12 col-md-4 d-flex justify-content-center navbar-center ">
-      <a class="navbar-brand nav-start" routerLink="/home">Home</a>
-      <a class="navbar-brand nav-start" routerLink="/about">Chi siamo</a>
-      <a class="navbar-brand nav-start" routerLink="/contatti">Contatti</a>
-    </div>
+    <ul class="navbar-nav ms-auto d-flex align-items-center gap-3">
+      <li class="nav-item" *ngIf="isLoggedIn()">
+        <button (click)="logout()" class="Btn">
+          <div class="sign"><svg viewBox="0 0 512 512">
+              <path
+                d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z">
+              </path>
+            </svg></div>
 
-    <!-- Bottone -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar"
-      aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  </div>
-</nav>
-
-<!-- Offcanvas Navbar -->
-<div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar"
-  aria-labelledby="offcanvasDarkNavbarLabel">
-  <div class="offcanvas-header">
-
-    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-
-  <div class="offcanvas-body">
-    
-    <!-- Sezione di ricerca -->
-    <div id="search-container">
-      <div class="nebula"></div>
-      <div class="starfield"></div>
-      <div class="cosmic-dust"></div>
-      <div class="cosmic-dust"></div>
-      <div class="cosmic-dust"></div>
-
-      <div class="stardust"></div>
-      <div class="cosmic-ring"></div>
-
-      <div id="main">
-        <input class="input" name="text" type="text" placeholder="Cerca un prodotto" />
-        <div id="input-mask"></div>
-        <div id="cosmic-glow"></div>
-        <div class="wormhole-border"></div>
-        <div id="wormhole-icon">
-          <svg stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="#a9c7ff" fill="none" height="24"
-            width="24" viewBox="0 0 24 24">
-            <circle r="10" cy="12" cx="12"></circle>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-            <path d="M2 12h20"></path>
-          </svg>
+          <div class="text">Logout</div>
+        </button>
+      </li>
+      <li class="nav-item">
+        <div class="button">
+          <div class="button-wrapper">
+            <div class="textshop">Buy Now</div>
+            <span class="icon">
+              <svg viewBox="0 0 16 16" class="bi bi-cart2" fill="currentColor" height="16" width="16"
+                xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z">
+                </path>
+              </svg>
+            </span>
+          </div>
         </div>
-        <div id="search-icon">
-          <svg stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="url(#cosmic-search)" fill="none"
-            height="24" width="24" viewBox="0 0 24 24">
-            <circle r="8" cy="11" cx="11"></circle>
-            <line y2="16.65" x2="16.65" y1="21" x1="21"></line>
-            <defs>
-              <linearGradient gradientTransform="rotate(45)" id="cosmic-search">
-                <stop stop-color="#a9c7ff" offset="0%"></stop>
-                <stop stop-color="#6e8cff" offset="100%"></stop>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-      </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/login']">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/register']">Register</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+<div class="row w-100">
+  <div class="custom-menu" [class.hide]="hideNavbar">
+    <!-- Bikes -->
+    <div class="menu-item">
+      <span class="menu-label col-2 col-md-4">Bikes</span>
+      <ul class="dropdown">
+        <li><a href="#">Mountain</a></li>
+        <li><a href="#">Road</a></li>
+        <li><a href="#">City</a></li>
+      </ul>
     </div>
 
-    <!-- Link di navigazione nella parte mobile -->
-    <div class="row mt-3 d-flex justify-content-center">
-      <div class="col-6 ">
-        <ul class="navbar-nav justify-content-end flex-grow-1 navbar-links d-md-none ">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/home" data-bs-dismiss="offcanvas">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/about" data-bs-dismiss="offcanvas">Chi siamo</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/contatti" data-bs-dismiss="offcanvas">Contatti</a>
-          </li>
-        </ul>
-      </div>
-
-      <div class="col-6 col-md-12 settings">
-        <ul class="navbar-nav justify-content-end flex-grow-1  navbar-links ">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/login" data-bs-dismiss="offcanvas">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/register" data-bs-dismiss="offcanvas">Registrati</a> 
-          </li>
-          <li class="nav-item">
-            <a class="nav-link cart" routerLink="/cart" data-bs-dismiss="offcanvas">Carrello 🛒</a>
-            <span *ngIf="cartCount > 0" class="cart-count">{{ cartCount }}</span>
-          </li>
-        </ul>
-      </div>
+    <!-- Components -->
+    <div class="menu-item">
+      <span class="menu-label col-2 col-md-4">Components</span>
+      <ul class="dropdown">
+        <li><a href="#">Drivetrain</a></li>
+        <li><a href="#">Brakes</a></li>
+        <li><a href="#">Wheels</a></li>
+      </ul>
     </div>
 
+    <!-- Clothings -->
+    <div class="menu-item">
+      <span class="menu-label col-2 col-md-4">Clothings</span>
+      <ul class="dropdown">
+        <li><a href="#">Jerseys</a></li>
+        <li><a href="#">Shorts</a></li>
+        <li><a href="#">Shoes</a></li>
+      </ul>
+    </div>
+
+    <!-- Accessories -->
+    <div class="menu-item">
+      <span class="menu-label col-2 col-md-4">Accessories</span>
+      <ul class="dropdown">
+        <li><a href="#">Lights</a></li>
+        <li><a href="#">Locks</a></li>
+        <li><a href="#">Tools</a></li>
+      </ul>
+    </div>
+
+    <!-- Best Sellers -->
+    <div class="menu-item">
+      <span class="menu-label col-2 col-md-4">Best.Sellers</span>
+      <ul class="dropdown">
+        <li><a href="#">Top Rated</a></li>
+        <li><a href="#">Hot Deals</a></li>
+        <li><a href="#">New Arrivals</a></li>
+      </ul>
+    </div>
   </div>
 </div>

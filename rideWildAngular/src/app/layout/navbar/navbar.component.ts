@@ -1,6 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router'; // importa anche Router
+import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -10,29 +11,38 @@ import { RouterLink, Router } from '@angular/router'; // importa anche Router
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
-  isScrolled = false;
-  isMenuOpen = false;
-  cartCount = 0;
+  private lastScrollTop = 0;
+  public hideNavbar = false;
+  public isScrolled = false; // aggiunto
 
-  constructor(private router: Router) {} // <-- inietta Router
-
-  toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen;
-  }
-
-  @HostListener('window:scroll', [])
-  onWindowScroll() {
-    this.isScrolled = window.scrollY > 50;
-  }
+  constructor(private router: Router) { }
 
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('fullname');
-    this.router.navigate(['/home']); // usa il router
+    this.router.navigate(['/home']);
     window.location.reload();
   }
 
   isLoggedIn(): boolean {
     return localStorage.getItem('token') !== null;
   }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+    if (currentScroll < this.lastScrollTop) {
+      this.hideNavbar = false;
+      this.isScrolled = false;
+    } else {
+      this.isScrolled = currentScroll > 50;
+      if (currentScroll > 80) {
+        this.hideNavbar = true;
+      }
+    }
+
+    this.lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+  }
 }
+

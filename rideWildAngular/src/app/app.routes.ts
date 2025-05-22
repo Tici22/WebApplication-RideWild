@@ -21,7 +21,7 @@ export const routes: Routes = [
   
   {
     path: '',
-    component: AppFrameComponent,
+    component: HomeComponent,
     children: [
       {
         path: '',
@@ -30,5 +30,5 @@ export const routes: Routes = [
       }
     ]
   },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '/home' }
 ];

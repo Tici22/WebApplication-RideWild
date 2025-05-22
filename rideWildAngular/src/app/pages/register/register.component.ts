@@ -5,6 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../services/product.service/auth.service';
+import { RedirectCommand, Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -14,13 +17,16 @@ import { AuthService } from '../../services/product.service/auth.service';
     ReactiveFormsModule,
     CommonModule,
     FormsModule,
+    RouterLink
   ],
 })
 export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
+  successMessage: string = '';
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService) {
+
+  constructor(private fb: FormBuilder, private http: HttpClient, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
       date: ['', Validators.required],
       fullname: ['', Validators.required],
@@ -36,6 +42,8 @@ export class RegisterComponent {
     return pass === confPass ? null : { notMatching: true };
   }
 
+
+
   get f() {
     return this.registerForm.controls;
   }
@@ -50,7 +58,7 @@ export class RegisterComponent {
       return;
     }
 
-    
+
 
     const data = {
       email: this.registerForm.value.email,
@@ -60,10 +68,14 @@ export class RegisterComponent {
     };
 
     this.authService.register(data.email, data.password, data.fullname, data.date).subscribe({
-      next: (response: any) => {
-        console.log('Registrazione avvenuta con successo:', response);
+      next: () => {
+        this.successMessage = 'Registrazione avvenuta con successo.';
         this.errorMessage = '';
-        // Redirect or show success message
+
+        // Aspetta 2 secondi prima del redirect
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 2000); // 2000ms = 2 secondi
       },
       error: (error) => {
         console.error('Errore durante la registrazione:', error);
@@ -71,9 +83,8 @@ export class RegisterComponent {
           this.errorMessage = 'Email già in uso.';
         } else {
           this.errorMessage = 'Errore di sistema, riprova più tardi.';
-          // Fra se vuoi aggiungere un errore o altri fai pure
         }
       }
-  });
+    });
   }
 }

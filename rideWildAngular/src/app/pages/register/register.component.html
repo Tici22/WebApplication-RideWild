@@ -43,19 +43,28 @@
       <div *ngIf="f['confermaPassword'].touched && f['confermaPassword'].invalid" class="text-danger">
         <small *ngIf="f['confermaPassword'].errors?.['required']">Conferma la password.</small>
       </div>
-      <div *ngIf="registerForm.errors?.['notMatching'] && (f['confermaPassword'].touched || f['password'].touched)" class="text-danger">
+      <div *ngIf="registerForm.errors?.['notMatching'] && (f['confermaPassword'].touched || f['password'].touched)"
+        class="text-danger">
         <small>Le password non coincidono.</small>
       </div>
 
-      <div *ngIf="errorMessage" class="alert alert-danger mt-2">
-        {{ errorMessage }}
-      </div>
+
 
       <button type="submit" class="submit" [disabled]="registerForm.invalid">Registrati</button>
 
       <p class="signin">
         Hai già un account? <a routerLink="/login">Accedi</a>
       </p>
+
+      <div *ngIf="successMessage || errorMessage" class="mt-3 text-center message-box">
+        <div [ngClass]="{
+      'text-success fw-bold': successMessage,
+      'text-danger fw-bold': errorMessage
+    }">
+          {{ successMessage || errorMessage }}
+        </div>
+      </div>
+
     </form>
   </div>
 </div>
