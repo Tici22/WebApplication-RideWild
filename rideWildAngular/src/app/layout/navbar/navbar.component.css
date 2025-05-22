@@ -14,8 +14,7 @@
   transition: all 0.3s ease;
 }
 
-/* From Uiverse.io by kennyotsu-monochromia */
-.Btn {
+.BtnLogout {
   --black: #000000;
   --ch-black: #141414;
   --eer-black: #1b1b1b;
@@ -67,124 +66,6 @@
   transition-duration: .3s;
 }
 
-/* hover effect on button width */
-.Btn:hover {
-  width: 125px;
-  border-radius: 15px;
-  transition-duration: .3s;
-}
-
-.Btn:hover .sign {
-  width: 30%;
-  transition-duration: .3s;
-  padding-left: 20px;
-}
-
-.Btn:hover .text {
-  opacity: 1;
-  width: 70%;
-  transition-duration: .3s;
-  padding-right: 10px;
-}
-
-.Btn:active {
-  transform: translate(2px, 2px);
-}
-
-.custom-menu {
-  display: flex;
-  justify-content: space-evenly;
-  background-color: #222;
-  padding: 10px 0;
-}
-
-.menu-item {
-  position: relative;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.menu-label {
-  color: white;
-  text-decoration: none;
-  border: none;
-  background: none;
-  font-weight: 600;
-  font-family: 'Poppins', sans-serif;
-}
-
-.menu-label::before {
-  margin-left: auto;
-}
-
-.menu-label::after, .menu-label::before {
-  content: '';
-  width: 0%;
-  height: 2px;
-  background: #f44336;
-  display: block;
-  transition: 0.5s;
-}
-
-.menu-label:hover::after, .menu-label:hover::before {
-  width: 100%;
-}
-
-.menu-item:hover .dropdown {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.dropdown {
-  position: absolute;
-  top: 130%;
-  left: -30px;
-  background-color: rgba(0, 0, 0, 0.95);
-  color: white;
-  list-style: none;
-  padding: 10px 10px;
-  min-width: 200px;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-  pointer-events: none;
-  z-index: 100;
-}
-
-.dropdown li {
-  padding: 18px 20px;
-  text-align: center;
-}
-
-.dropdown li a {
-  color: white;
-  text-decoration: none;
-  display: block;
-  transition: background-color 0.2s;
-}
-
-.dropdown li a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-
-.navbar {
-  background-color: white;
-  transition: background-color 0.4s ease, transform 0.4s ease;
-}
-
-.navbar.scrolled {
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
 /* From Uiverse.io by JaydipPrajapati1910 */ 
 .button {
   --width: 100px;
@@ -205,30 +86,9 @@
   cursor: pointer;
 }
 
-.button::before {
-  position: absolute;
-  content: attr(data-tooltip);
-  width: var(--tooltip-width);
-  height: var(--tooltip-height);
-  background-color: #555;
-  font-size: 0.9rem;
-  color: #fff;
-  border-radius: .25em;
-  line-height: var(--tooltip-height);
-  bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px);
-  left: calc(50% - var(--tooltip-width) / 2);
-}
 
-.button::after {
-  position: absolute;
-  content: '';
-  width: 0;
-  height: 0;
-  border: 10px solid transparent;
-  border-top-color: #555;
-  left: calc(50% - 10px);
-  bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px);
-}
+
+
 
 .button::after,.button::before {
   opacity: 0;
@@ -284,6 +144,11 @@
   top: 0;
 }
 
+.button:hover:before,.button:hover:after {
+  opacity: 1;
+  visibility: visible;
+}
+
 .button:hover:after {
   bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) - 20px);
 }
@@ -294,9 +159,185 @@
 
 
 
+
+
+
+
+
+
+/* hover effect on button width */
+.BtnLogout:hover {
+  width: 125px;
+  border-radius: 15px;
+  transition-duration: .3s;
+}
+
+.BtnLogout:hover .sign {
+  width: 30%;
+  transition-duration: .3s;
+  padding-left: 20px;
+}
+
+.BtnLogout:hover .text {
+  opacity: 1;
+  width: 70%;
+  transition-duration: .3s;
+  padding-right: 10px;
+}
+
+.BtnLogout:active {
+  transform: translate(2px, 2px);
+}
+
+.custom-menu {
+  display: flex;
+  justify-content: space-evenly;
+  background-color: #222;
+  padding: 10px 0;
+}
+
+.menu-item {
+  position: relative;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.menu-label {
+  color: white;
+  text-decoration: none;
+  border: none;
+  background: none;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+}
+
+.menu-label::before {
+  margin-left: auto;
+}
+
+.menu-label::after,
+.menu-label::before {
+  content: '';
+  width: 0%;
+  height: 2px;
+  background: #f44336;
+  display: block;
+  transition: 0.5s;
+}
+
+.menu-label:hover::after,
+.menu-label:hover::before {
+  width: 100%;
+}
+
+.menu-item:hover .dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.dropdown {
+  position: absolute;
+  top: 130%;
+  left: -30px;
+  background-color: rgba(0, 0, 0, 0.95);
+  color: white;
+  list-style: none;
+  padding: 10px 10px;
+  min-width: 200px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.dropdown li {
+  padding: 18px 20px;
+  text-align: center;
+}
+
+.dropdown li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.2s;
+}
+
+.dropdown li a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btnLogReg{
+  font-size: 16px;
+  background: transparent;
+  border: none;
+  padding: 1em 1.5em;
+  color: black;
+  text-transform: uppercase;
+  position: relative;
+  transition: 0.5s ease;
+  cursor: pointer;
+}
+
+.btnLogReg::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background-color: #ffc506;
+  transition: 0.5s ease;
+}
+
+.btnLogReg:hover {
+  color: #1e1e2b;
+  transition-delay: 0.5s;
+}
+
+.btnLogReg:hover::before {
+  width: 100%;
+}
+
+.btnLogReg::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 0;
+  width: 100%;
+  background-color: #ffc506;
+  transition: 0.2s ease;
+  z-index: -1;
+}
+
+.btnLogReg:hover::after {
+  height: 100%;
+  transition-delay: 0.4s;
+  color: aliceblue;
+}
+
+.navbar {
+  background-color: white;
+  transition: background-color 0.4s ease, transform 0.4s ease;
+  padding-right: 20px;
+}
+
+.navbar.scrolled {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .custom-menu {
   position: fixed;
-  top: 80px; 
+  top: 80px;
   left: 0;
   right: 0;
   z-index: 999;
@@ -317,17 +358,17 @@
   }
 
   .dropdown li {
-  padding: 0;
-  margin: 0;
-}  
+    padding: 0;
+    margin: 0;
+  }
 
-.dropdown{
-  min-width: 10px;  
-  right: -15px;
-}
+  .dropdown {
+    min-width: 10px;
+    right: -15px;
+  }
 
-.menu-label {
-  padding: 10px 5px;
-  display: block;
-}
+  .menu-label {
+    padding: 10px 5px;
+    display: block;
+  }
 }
