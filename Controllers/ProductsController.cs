@@ -17,6 +17,7 @@ namespace Adventure19.Controllers
     {
         private readonly AdventureWorksLt2019Context _context;
         private readonly ILogger<ProductsController> _logger;
+
         public ProductsController(AdventureWorksLt2019Context context, ILogger<ProductsController> logger)
         {
             _context = context;
@@ -29,14 +30,15 @@ namespace Adventure19.Controllers
         {
             if (pageNumber <= 0 || pageSize <= 0)
             {
+                _logger.LogWarning("GetProducts: Invalid pagination parameters. pageNumber={PageNumber}, pageSize={PageSize}", pageNumber, pageSize);
                 return BadRequest("pageNumber and pageSize must be greater than 0.");
             }
 
-            var productsDto = await _context.Products 
-                .OrderBy(p => p.Name) 
+            var productsDto = await _context.Products
+                .OrderBy(p => p.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(p => new ProductDto 
+                .Select(p => new ProductDto
                 {
                     ProductId = p.ProductId,
                     Name = p.Name,
@@ -54,18 +56,21 @@ namespace Adventure19.Controllers
                     Rowguid = p.Rowguid,
                     ModifiedDate = p.ModifiedDate
                 })
-                .ToListAsync(); 
-            _logger.LogInformation($"Trovati {productsDto.Count} products from the database.");
-            return Ok(productsDto); 
+                .ToListAsync();
+
+            _logger.LogInformation("GetProducts: Returned {Count} products.", productsDto.Count);
+            return Ok(productsDto);
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDto>> GetProduct(int id)
         {
+            _logger.LogInformation("GetProduct: Searching for product with ID {Id}", id);
+
             var productDto = await _context.Products
-                .Where(p => p.ProductId == id) 
-                .Select(p => new ProductDto 
+                .Where(p => p.ProductId == id)
+                .Select(p => new ProductDto
                 {
                     ProductId = p.ProductId,
                     Name = p.Name,
@@ -83,24 +88,25 @@ namespace Adventure19.Controllers
                     Rowguid = p.Rowguid,
                     ModifiedDate = p.ModifiedDate
                 })
-                .FirstOrDefaultAsync(); 
+                .FirstOrDefaultAsync();
 
             if (productDto == null)
             {
-                return NotFound(); 
+                _logger.LogWarning("GetProduct: Product with ID {Id} not found.", id);
+                return NotFound();
             }
 
-            return Ok(productDto); 
+            _logger.LogInformation("GetProduct: Product with ID {Id} retrieved successfully.", id);
+            return Ok(productDto);
         }
 
-
         // PUT: api/Products/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
             if (id != product.ProductId)
             {
+                _logger.LogWarning("PutProduct: Mismatch between route ID {Id} and product ID {ProductId}", id, product.ProductId);
                 return BadRequest();
             }
 
@@ -109,15 +115,18 @@ namespace Adventure19.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                _logger.LogInformation("PutProduct: Product with ID {Id} updated successfully.", id);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
                 if (!ProductExists(id))
                 {
+                    _logger.LogWarning("PutProduct: Product with ID {Id} not found during update.", id);
                     return NotFound();
                 }
                 else
                 {
+                    _logger.LogError(ex, "PutProduct: Concurrency error while updating product with ID {Id}", id);
                     throw;
                 }
             }
@@ -126,12 +135,13 @@ namespace Adventure19.Controllers
         }
 
         // POST: api/Products
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("PostProduct: Product with ID {Id} created successfully.", product.ProductId);
 
             return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
         }
@@ -143,11 +153,14 @@ namespace Adventure19.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
+                _logger.LogWarning("DeleteProduct: Product with ID {Id} not found.", id);
                 return NotFound();
             }
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("DeleteProduct: Product with ID {Id} deleted successfully.", id);
 
             return NoContent();
         }
@@ -155,6 +168,8 @@ namespace Adventure19.Controllers
         [HttpGet("by-category/{productCategory}")]
         public async Task<IActionResult> GetProductsForCategory(int productCategory)
         {
+            _logger.LogInformation("GetProductsForCategory: Fetching products for category {CategoryId}", productCategory);
+
             var products = await _context.Products
                 .Where(p => p.ProductCategory != null && p.ProductCategory.ParentProductCategoryId == productCategory)
                 .Select(p => new ProductDto
@@ -173,31 +188,56 @@ namespace Adventure19.Controllers
                     ProductModelName = p.ProductModel != null ? p.ProductModel.Name : "Nessuna Categoria",
                 }).ToListAsync();
 
+            _logger.LogInformation("GetProductsForCategory: Returned {Count} products.", products.Count);
+
             return Ok(products);
         }
-        
-        //
+
         [HttpGet("by-parent/{parentId}")]
         public async Task<IActionResult> GetByParentCategory(int parentId)
         {
+            _logger.LogInformation("GetByParentCategory: Fetching child categories for parent ID {ParentId}", parentId);
+
             var result = await _context.ProductCategories
-                .Where(p => p.ParentProductCategoryId == parentId) // Fix CS1061: Correct property name
-                .Where(p => _context.Products
-                            .Any(s => s.ProductCategoryId == p.ProductCategoryId)) // Fix CS8602: Check for null reference
-                .GroupBy(p => new { p.ParentProductCategoryId, p.Name }) // Fix CS1061: Correct property name
+                .Where(p => p.ParentProductCategoryId == parentId)
+                .Where(p => _context.Products.Any(s => s.ProductCategoryId == p.ProductCategoryId))
+                .GroupBy(p => new { p.ParentProductCategoryId, p.Name })
                 .Select(g => new
                 {
                     g.Key.Name
                 })
                 .ToListAsync();
 
+            _logger.LogInformation("GetByParentCategory: Found {Count} subcategories.", result.Count);
+
             return Ok(result);
         }
+
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.ProductId == id);
         }
 
+        //simulazione errore test
 
+        [HttpGet("simulate-db-error")]
+        public async Task<IActionResult> SimulateDbError()
+        {
+            var product = new Product
+            {
+                Name = "Test DB Error",
+                ProductNumber = "1234-ERROR",
+                StandardCost = 10,
+                ListPrice = 20,
+                SellStartDate = DateTime.UtcNow,
+                ProductCategoryId = 99999, // categoria inesistente
+                ModifiedDate = DateTime.UtcNow
+            };
+
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync(); // Questo dovrebbe fallire se 99999 non esiste come foreign key
+
+            return Ok();
+        }
     }
 }
