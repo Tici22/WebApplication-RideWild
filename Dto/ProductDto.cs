@@ -21,10 +21,11 @@ namespace Adventure19.Dto
 
         public Guid Rowguid { get; set; }
         public DateTime ModifiedDate { get; set; }
+        public decimal effectivePrice { get; set; }
+        public List<ProductCategory>? ProductCategories { get; set; }
 
-       public List<ProductCategory>? ProductCategories { get; set; }
+    public List<SalesOrderDetailsDTO> SalesOrderDetails { get; set; }
 
-        
     }
 
 }

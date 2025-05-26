@@ -16,46 +16,33 @@ namespace Adventure19
     {
         public static void Main(string[] args)
         {
-            // 1. Configurazione Serilog da appsettings.json
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            //Log.Logger = new LoggerConfiguration()
-            //    .ReadFrom.Configuration(configuration)
-            //    .Enrich.FromLogContext()
-            //    .WriteTo.Console()
-            //    .CreateLogger();
-
-            // 2. Inizializza builder
             var builder = WebApplication.CreateBuilder(args);
 
-            // 3. Usa Serilog come logger
-            //builder.Host.UseSerilog();
-
-            // 4. CORS
+            // ✅ CORS fix: allow Angular origin explicitly
             builder.Services.AddCors(opts =>
             {
-                opts.AddPolicy("CORSPolicy",
-                   builder => builder
-                   .AllowAnyHeader()
-                   .AllowAnyMethod()
-                   .AllowCredentials()
-                   .SetIsOriginAllowed((host) => true));
+                opts.AddPolicy("CORSPolicy", policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
             });
 
-            // 5. Controller e JSON
             builder.Services.AddControllers().AddJsonOptions(options =>
                 options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
-            // 6. Connessioni DB
             builder.Services.AddDbContext<AuthDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("AuthDbConnection")));
 
             builder.Services.AddDbContext<AdventureWorksLt2019Context>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
 
-            // 7. JWT e servizi
             builder.Services.AddScoped<JwtService>();
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -74,61 +61,64 @@ namespace Adventure19
 
             builder.Services.AddAuthorization();
 
-            // 🔹 8. Swagger
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddOpenApi();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Adventure19 API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Description = "Inserisci 'Bearer' seguito da uno spazio e dal token JWT.\nEsempio: 'Bearer abcdef12345'",
+                    Name = "Authorization",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
 
-            // 9. EmailService
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                {
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
+
+            builder.Services.AddOpenApi();
             builder.Services.AddSingleton<EmailService>();
 
-            // 10. Costruzione app
             var app = builder.Build();
-
-
-            //app.UseSerilogRequestLogging();
-            if (app.Environment.IsDevelopment())
-                app.UseExceptionHandler("/error");
-            else
-                app.UseDeveloperExceptionPage();
-            app.UseRouting();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
-
-            //IMPORTANTE !!!! LASCIARE QUESTO PEZZO COMMENTATO PERCHÉ ALTRIMENTI INTERFERISCE CON LA CETRALIZZAZIONE LATO BACK END
-            // 11. Middleware per loggare errori non gestiti globalmente
-
-            //app.UseExceptionHandler(errorApp =>
-            //{
-            //    errorApp.Run(async context =>
-            //    {
-            //        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-            //        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-
-            //        logger.LogError(exceptionHandlerPathFeature?.Error, "Errore non gestito");
-
-            //        context.Response.StatusCode = 500;
-            //        await context.Response.WriteAsync("Errore interno del server");
-            //    });
-            //});
 
             if (app.Environment.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.MapOpenApi();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            else
+            {
+                app.UseExceptionHandler("/error");
+            }
 
+            app.UseRouting();
+
+            // ✅ Correct CORS middleware order
             app.UseCors("CORSPolicy");
+
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.MapControllers();
 
-            // 12. Avvio app
             app.Run();
-
-            // 13. Chiude e flush dei log (buona prassi)
-            //Log.CloseAndFlush();
         }
     }
 }
