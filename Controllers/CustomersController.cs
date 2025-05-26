@@ -13,6 +13,7 @@ using Adventure19.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Globalization;
+using Adventure19.Dto;
 
 namespace Adventure19.Controllers
 {
@@ -54,85 +55,52 @@ namespace Adventure19.Controllers
             return customer;
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(int id, CustomerUpdateModel customerUpdate)
+        
+        [HttpPut("modify/{id}")]
+        public async Task<IActionResult> ModifyCustomer(int id, UpdateCredentialDTO dto)
         {
-            if (id != customerUpdate.CustomerId)
-            {
-                return BadRequest();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var customerToUpdate = await _oldcontext.Customers.Include(c => c.CustomerAddresses).FirstOrDefaultAsync(c => c.CustomerId == id);
-
-            if (customerToUpdate == null)
-            {
-                return NotFound();
-            }
-
-            customerToUpdate.NameStyle = customerUpdate.NameStyle;
-            customerToUpdate.Title = customerUpdate.Title;
-            customerToUpdate.FirstName = customerUpdate.FirstName;
-            customerToUpdate.MiddleName = customerUpdate.MiddleName;
-            customerToUpdate.LastName = customerUpdate.LastName;
-            customerToUpdate.Suffix = customerUpdate.Suffix;
-            customerToUpdate.CompanyName = customerUpdate.CompanyName;
-            customerToUpdate.SalesPerson = customerUpdate.SalesPerson;
-            customerToUpdate.EmailAddress = customerUpdate.EmailAddress;
-            customerToUpdate.Phone = customerUpdate.Phone;
-            customerToUpdate.PasswordHash = customerUpdate.PasswordHash;
-            customerToUpdate.PasswordSalt = customerUpdate.PasswordSalt;
-            customerToUpdate.ModifiedDate = DateTime.Now;
-
-            if (customerUpdate.AddressIds != null)
-            {
-                customerToUpdate.CustomerAddresses = customerToUpdate.CustomerAddresses.Where(ca => customerUpdate.AddressIds.Contains(ca.AddressId)).ToList();
-
-                foreach (var addressId in customerUpdate.AddressIds)
-                {
-                    if (!customerToUpdate.CustomerAddresses.Any(ca => ca.AddressId == addressId))
-                    {
-                        var address = await _oldcontext.Addresses.FindAsync(addressId);
-                        if (address != null)
-                        {
-                            customerToUpdate.CustomerAddresses.Add(new CustomerAddress
-                            {
-                                AddressId = addressId,
-                                AddressType = "Main",
-                                Rowguid = Guid.NewGuid(),
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
-                    }
-                }
-            }
-            else
-            {
-                customerToUpdate.CustomerAddresses.Clear();
-            }
-
             try
             {
-                await _oldcontext.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CustomerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                // Controllo di coerenza ID
+                if (id != dto.Id)
+                    return BadRequest("ID utente non valido.");
 
-            return NoContent();
+                // 1. Trova l'utente nel nuovo DB
+                var user = await _context.Users.FindAsync(id);
+                if (user == null)
+                    return NotFound(); // Utente non trovato:contentReference[oaicite:6]{index=6}
+
+                // 2. Aggiorna FullName e Email nel nuovo DB
+                user.FullName = dto.FullName;
+                user.Email = dto.Email;
+                // EF Core segue le modifiche, non serve chiamare Update esplicitamente per entità tracciate
+
+                // 3. Trova il cliente nel DB vecchio usando la nuova email
+                var customer = await _oldcontext.Customers
+                    .FirstOrDefaultAsync(c => c.EmailAddress == dto.Email);
+                if (customer != null)
+                {
+                    // 4. Aggiorna CompanyName e Phone se forniti
+                    if (!string.IsNullOrEmpty(dto.CompanyName))
+                        customer.CompanyName = dto.CompanyName;
+                    if (!string.IsNullOrEmpty(dto.Phone))
+                        customer.Phone = dto.Phone;
+                    customer.ModifiedDate = DateTime.UtcNow;
+                }
+
+                // 5. Salva le modifiche su entrambi i contesti
+                await _context.SaveChangesAsync();
+                await _oldcontext.SaveChangesAsync();
+
+                return Ok("dati dell'utente aggiornati con successo"); // Operazione completata con successo:contentReference[oaicite:7]{index=7}
+            }
+            catch (Exception ex)
+            {
+                // Gestione degli errori generici
+                return BadRequest($"Errore durante l'aggiornamento: {ex.Message}");
+            }
         }
+
         // POST : api/Customers/login
         /// Login dell'utente:
         /// 1. Controlla se l'utente esiste nel nuovo DB (AuthDbContext). Se sì, verifica la password.
@@ -162,7 +130,11 @@ namespace Adventure19.Controllers
                     }
                     var token = _jwtService.GenerateToken(user.Id.ToString(), user.Email);
                     var fullname = user.FullName;
-                    return Ok(new { message = "Accesso riuscito.", token,fullname
+                    return Ok(new
+                    {
+                        message = "Accesso riuscito.",
+                        token,
+                        fullname
                     });
                 }
 
@@ -271,16 +243,22 @@ namespace Adventure19.Controllers
             }
             catch (Exception e)
             {
-                 return BadRequest(e.InnerException?.Message ?? e.Message);
+                return BadRequest(e.InnerException?.Message ?? e.Message);
             }
         }
 
 
-        //[HttpPut("update")]
-        //public async Task<IActionResult> UpdateCustomer()
-        //{
-        //    return BadRequest("Non implementato");
-        //}
+        /// <summary>
+        /// aggiorna le credenziali del cliente.
+        /// 
+        /// </summary>
+        /// 
+        /// <returns></returns>
+        
+
+
+
+
 
         // DELETE: api/Customers/5
         [HttpDelete("{id}")]

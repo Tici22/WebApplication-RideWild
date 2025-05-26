@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Adventure19.Models;
 using Adventure19.Dto;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace Adventure19.Controllers
 {
@@ -164,35 +165,59 @@ namespace Adventure19.Controllers
 
             return NoContent();
         }
+        /// <summary>
+        ///  il metodo permette di prendere i prodotti in base alla categoria (che vanno da 5 a 10) perche da 1 a 4 sono le macrocategorie
+        /// La risposta che vi arriva sarà un oggetto con il numero di prodotti e il nome della categoria e prodotti
+        /// </summary>
+        /// <param name="productCategory"></param>
+        /// <returns></returns>
 
         [HttpGet("by-category/{productCategory}")]
         public async Task<IActionResult> GetProductsForCategory(int productCategory)
         {
             _logger.LogInformation("GetProductsForCategory: Fetching products for category {CategoryId}", productCategory);
 
+            //Recupero della categoria
+            var categoryName = await _context.ProductCategories
+            .Where(c => c.ProductCategoryId == productCategory)
+            .Select(c => c.Name)
+            .FirstOrDefaultAsync();
+
+            //Recupero dei prodotti
             var products = await _context.Products
-                .Where(p => p.ProductCategory != null && p.ProductCategory.ParentProductCategoryId == productCategory)
+                .Where(p => p.ProductCategory.ProductCategoryId != null && p.ProductCategory.ProductCategoryId == productCategory)
                 .Select(p => new ProductDto
                 {
                     ProductId = p.ProductId,
-                    Name = p.Name,
+                    ProductModelName = p.ProductModel.Name,
                     ProductNumber = p.ProductNumber,
-                    Color = p.Color,
-                    Size = p.Size,
+                    Color = p.Color, // Colore 
+                    Size = p.Size, // Grandezza
                     StandardCost = p.StandardCost,
                     ListPrice = p.ListPrice,
                     ProductModelId = p.ProductModelId,
                     SellStartDate = p.SellStartDate,
                     SellEndDate = p.SellEndDate,
                     DiscontinuedDate = p.DiscontinuedDate,
-                    ProductModelName = p.ProductModel != null ? p.ProductModel.Name : "Nessuna Categoria",
+                    effectivePrice = p.SalesOrderDetails.Any()
+                             ? p.SalesOrderDetails.OrderByDescending(s => s.SalesOrderId).FirstOrDefault().UnitPrice
+                             : p.ListPrice // Prezzo effettivo Se non ci sono ordini, uso il ListPrice
                 }).ToListAsync();
 
-            _logger.LogInformation("GetProductsForCategory: Returned {Count} products.", products.Count);
+            _logger.LogInformation($"Trovati : {products.Count} Prodotti");
 
-            return Ok(products);
+
+            return Ok(new
+            {                count = products.Count,
+                category = categoryName,
+                products
+            });
         }
-
+        /// <summary>
+        /// Recupera le sottocategorie di un prodotto in base all'ID della categoria padre.
+        /// </summary>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
         [HttpGet("by-parent/{parentId}")]
         public async Task<IActionResult> GetByParentCategory(int parentId)
         {
