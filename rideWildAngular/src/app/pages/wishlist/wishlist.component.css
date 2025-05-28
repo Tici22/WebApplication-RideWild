@@ -1,3 +1,68 @@
+.wishlist-container {
+  max-width: 900px;
+  margin: 180px auto 40px;
+  padding: 0 16px;
+}
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.wishlist-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.wishlist-card:hover {
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.15);
+}
+
+.wishlist-card img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.wishlist-card button {
+  background-color: #ff4081;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.wishlist-card button:hover {
+  background-color: #e73370;
+}
+
+.Nothing{
+    margin-top: 200px;
+    margin-bottom: 200px;
+}
+
+.btnClear{
+    background-color: #ff4081;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+
+}
+
 /* LOADER */
 
 * {
@@ -141,77 +206,4 @@
     stroke-dashoffset: -56.549;
     transform: rotate(1turn);
   }
-}
-
-
-
-
-
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.col-4 {
-    flex: 0 0 32%;
-    max-width: 32%;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-}
-
-.main-content {
-
-    margin-top: 134px;
-}
-
-
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.pagination-controls button {
-    background-color: #4f46e5;
-    /* Indigo-600 */
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.pagination-controls button:hover:not(:disabled) {
-    background-color: #4338ca;
-    /* Indigo-700 */
-    transform: translateY(-2px);
-}
-
-.pagination-controls button:disabled {
-    background-color: #cbd5e1;
-    /* Gray-300 */
-    color: #64748b;
-    /* Gray-500 */
-    cursor: not-allowed;
-}
-
-.pagination-controls span {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #334155;
-    /* Slate-700 */
 }

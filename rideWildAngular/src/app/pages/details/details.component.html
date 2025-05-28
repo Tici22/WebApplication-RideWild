@@ -1,0 +1,36 @@
+<div class="details-container" *ngIf="product; else loadingOrError">
+  <div class="image-section">
+    <img
+      #productImage
+      src="/images/placeholderbike.jpg"
+      alt="Immagine prodotto"
+      class="product-image"
+      (click)="toggleZoom()"
+      (mousedown)="onMouseDown($event)"
+      (mousemove)="onMouseMove($event)"
+      (mouseup)="onMouseUp()"
+      (mouseleave)="onMouseLeave()"
+      [style.transform]="
+        zoom > 1
+          ? 'scale(' + zoom + ') translate(' + translateX + 'px, ' + translateY + 'px)'
+          : 'none'
+      "
+    />
+  </div>
+
+  <div class="info-section">
+    <h2>Dettaglio prodotto: {{ product.name }}</h2>
+    <p><strong>Codice prodotto:</strong> {{ product.productNumber }}</p>
+    <p><strong>Colore:</strong> {{ product.color || 'N/A' }}</p>
+    <p><strong>Prezzo:</strong> €{{ product.listPrice }}</p>
+
+    <div class="buttons">
+      <button class="btn wishlist-btn" (click)="addToWishlist(product)">Aggiungi alla lista desideri</button>
+      <button class="btn buy-btn" (click)="buyNow(product)">Compra subito</button>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <p class="loading-message">Caricamento in corso o prodotto non trovato...</p>
+</ng-template>

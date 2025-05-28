@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product.service/product.service';
 import { Category } from '../../models/Category';
+import { WishlistService } from '../../services/product.service/wishlist.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,26 +18,35 @@ export class NavbarComponent {
   public hideNavbar = false;
   public isScrolled = false; // aggiunto
   Categories: Category[] = [];
-  constructor(private router: Router, private productService: ProductService) { }
+  wishlistCount: number = 0;
+
+  constructor(private router: Router, private productService: ProductService, private wishlistService: WishlistService) { }
+
+
   ngOnInit(): void {
     this.ShowCategoryProducts();
-  }
+
+    this.wishlistService.wishlistCount$.subscribe(count => {
+      this.wishlistCount = count;
+    });
+
+    }
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('fullname');
-    this.router.navigate(['/home']);
-    window.location.reload();
-  }
+      localStorage.removeItem('token');
+      localStorage.removeItem('fullname');
+      this.router.navigate(['/home']);
+      window.location.reload();
+    }
 
   isLoggedIn(): boolean {
-    return localStorage.getItem('token') !== null;
-  }
+      return localStorage.getItem('token') !== null;
+    }
 
   @HostListener('window:scroll', [])
   onWindowScroll(): void {
-    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (currentScroll < this.lastScrollTop) {
+      if(currentScroll <this.lastScrollTop) {
       this.hideNavbar = false;
       this.isScrolled = false;
     } else {
@@ -65,9 +75,7 @@ export class NavbarComponent {
       }, error: (error) => {
         console.error('Errore durante il caricamento delle categorie:', error);
       }
-
     });
-
   }
 }
 

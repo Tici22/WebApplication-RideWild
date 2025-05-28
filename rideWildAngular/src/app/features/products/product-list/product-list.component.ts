@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { ProductService } from '../../../services/product.service/product.service';
 import { ProductDto } from '../../../models/product.models';
 import { CardComponent } from '../../../layout/card/card.component';
-import { Category } from '../../../models/Category';
 
 @Component({
   selector: 'app-product-list',
@@ -20,9 +19,6 @@ export class ProductListComponent implements OnInit {
   currentPage: number = 1;
   readonly pageSize: number = 21;
   hasNextPage: boolean = true;
-  
-
-  // Altre variabili  
 
   constructor(private productService: ProductService) { }
 
@@ -32,6 +28,7 @@ export class ProductListComponent implements OnInit {
 
   loadProductsForPage(page: number): void {
     if (page < 1 || this.isLoading) {
+      // Se page < 1 o già in caricamento non fare nulla
       return;
     }
 
@@ -39,26 +36,32 @@ export class ProductListComponent implements OnInit {
 
     this.productService.getProducts(page, this.pageSize).subscribe({
       next: (data) => {
-        console.log(`Dati ricevuti per pagina ${page}:`, data);
-        if (data && data.length > 0) {
-          this.products = data;
-          this.currentPage = page;
-          this.hasNextPage = data.length === this.pageSize;
-        } else {
-          if (page > 1) {
-            this.currentPage = page - 1;
+        // Aspetta 2.5 secondi prima di aggiornare lo stato e la pagina,
+        // così il loader resta visibile abbastanza a lungo
+        setTimeout(() => {
+          if (data && data.length > 0) {
+            this.products = data;
+            this.currentPage = page;
+            this.hasNextPage = data.length === this.pageSize;
           } else {
-            this.products = [];
+            if (page > 1) {
+              this.currentPage = page - 1;
+            } else {
+              this.products = [];
+            }
+            this.hasNextPage = false;
           }
-          this.hasNextPage = false;
-        }
-        this.isLoading = false;
+          this.isLoading = false;
+        }, 1500);
       },
       error: (error) => {
         console.error('Errore API durante caricamento prodotti:', error);
-        this.isLoading = false;
-        this.products = [];
-        this.hasNextPage = false;
+        // Anche in caso di errore attendi 2.5 secondi prima di rimuovere il loader
+        setTimeout(() => {
+          this.isLoading = false;
+          this.products = [];
+          this.hasNextPage = false;
+        }, 1500);
       }
     });
   }
@@ -69,7 +72,6 @@ export class ProductListComponent implements OnInit {
     }
   }
 
-
   goToNextPage(): void {
     if (this.hasNextPage) {
       this.loadProductsForPage(this.currentPage + 1);
@@ -79,6 +81,4 @@ export class ProductListComponent implements OnInit {
   viewDetails(productId: number): void {
     console.log('Richiesto dettaglio per prodotto ID:', productId);
   }
-
-  
 }

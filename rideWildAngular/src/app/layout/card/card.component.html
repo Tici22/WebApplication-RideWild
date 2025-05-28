@@ -9,10 +9,12 @@
         <span>{{ product.name }}</span>
         <span>Code: {{ product.productNumber }}</span>
         <span>Colour: {{ product.color || 'N/D' }}</span>
+
       </div>
       <div class="action">
         <div class="price">€{{ product.listPrice }}</div>
-        <button class="btn-buy">Details</button>
+        
+        <button class="btn-buy" (click)="viewDetails(product.productId)">Details</button>
       </div>
     </div>
   </div>

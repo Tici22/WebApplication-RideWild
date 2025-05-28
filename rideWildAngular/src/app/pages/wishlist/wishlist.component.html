@@ -31,42 +31,32 @@
   </svg>
 </div>
 
+<!-- Contenuto wishlist solo se non sto caricando -->
+<div *ngIf="!isLoading">
 
-
-
-<div class="product-list-container">
-  <h2>Esplora i Nostri Prodotti</h2>
-
-  <div *ngIf="isLoading" class="loading-indicator">
-    <p>Caricamento in corso...</p>
-  </div>
-
-  <div *ngIf="!isLoading && products.length === 0" class="no-products">
-    <p>Nessun prodotto trovato in questa pagina.</p>
-    <button *ngIf="currentPage > 1" (click)="goToPreviousPage()" [disabled]="isLoading">
-      &laquo; Torna Indietro
-    </button>
-  </div>
-
-  <div class="main-content" *ngIf="!isLoading && products.length > 0">
-    <div class="container">
-      <div class="row">
-        <div class="col-12 col-md-4 mt-3 p-5" *ngFor="let product of products">
-          <app-card [product]="product" (viewDetails)="viewDetails(product.productId)"></app-card>
-        </div>
+  <div class="wishlist-container" *ngIf="wishlist.length > 0; else emptyWishlist">
+      <h2 class="text-center text-white">La tua lista desideri</h2>
+      <div class="wishlist-grid">
+          <div class="wishlist-card" *ngFor="let product of wishlist">
+              <img src="/images/placeholderbike.jpg" alt="{{ product.name }}" />
+              <h3 class="text-center text-white">{{ product.name }}</h3>
+              <p class="text-center text-white">Codice: {{ product.productNumber }}</p>
+              <p class="text-center text-white">Prezzo: €{{ product.listPrice }}</p>
+              <button (click)="removeFromWishlist(product.productId)">Rimuovi</button>
+          </div>
       </div>
-
-
-    </div>
-
-    <div class="pagination-controls mb-3">
-      <button (click)="goToPreviousPage()" [disabled]="currentPage <= 1 || isLoading">
-        &laquo; Precedente
-      </button>
-      <span> Pagina {{ currentPage }} </span>
-      <button (click)="goToNextPage()" [disabled]="!hasNextPage || isLoading">
-        Successiva &raquo;
-      </button>
-    </div>
   </div>
+
+  <div class="counter">
+      <p class="text-center text-white fs-3" *ngIf="wishlist.length > 0">Prodotti nella lista desideri: {{ wishlist.length }}</p>
+
+      <div class="clearwishlist text-center" *ngIf="wishlist.length > 0">
+          <button (click)="clearWishlist()" class="btnClear text-center">Svuota la lista desideri</button>
+      </div>
+  </div>
+
+  <ng-template #emptyWishlist>
+      <p class="text-center text-white fs-3 Nothing">Non hai ancora aggiunto prodotti alla lista desideri.</p>
+  </ng-template>
+
 </div>

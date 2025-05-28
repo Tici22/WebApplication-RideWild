@@ -66,7 +66,6 @@
   transition-duration: .3s;
 }
 
-/* From Uiverse.io by JaydipPrajapati1910 */ 
 .button {
   --width: 100px;
   --height: 35px;
@@ -157,15 +156,6 @@
   bottom: calc(var(--height) + var(--gap-between-tooltip-to-button));
 }
 
-
-
-
-
-
-
-
-
-/* hover effect on button width */
 .BtnLogout:hover {
   width: 125px;
   border-radius: 15px;
@@ -255,7 +245,33 @@
   transition: all 0.3s ease;
   pointer-events: none;
   z-index: 100;
+  overflow-y: auto;
+  max-height: 400px;
+   overflow-y: auto;
+  scrollbar-width: thin; /* per Firefox */
+  scrollbar-color: #888 rgba(255,255,255,0.1); /* per Firefox */
 }
+
+/* Chrome, Safari, Edge */
+.dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.dropdown::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa;
+}
+
 
 .dropdown li {
   padding: 18px 20px;
@@ -271,6 +287,10 @@
 
 .dropdown li a:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #f44336;
+  transition: background-color 0.8s;
+
 }
 
 .btnLogReg{
@@ -349,6 +369,51 @@
   opacity: 0;
   pointer-events: none;
 }
+
+.wishlist-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-bottom: 30px;
+}
+
+.wishlist-icon:hover {
+  background-color: rgba(255, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.wishlist-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #dc3545; /* rosso bootstrap */
+  transition: color 0.3s ease;
+}
+
+.wishlist-icon:hover svg {
+  color: #ff4d4f;
+}
+
+.counter {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: #ff4d4f;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  line-height: 1;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+}
+
 
 @media screen and (max-width: 768px) {
   .custom-menu {
