@@ -1,6 +1,6 @@
 .imgHeader {
   background: url('../../../assets/images/Header.jpg');
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
   background-size: cover;
   background-position: center;
@@ -13,7 +13,6 @@
   left: 75%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 150px;
   font-weight: bold;
   text-shadow: 2px 2px 4px #000000;
   text-transform: uppercase;
@@ -356,6 +355,175 @@
   width: 100%;
 }
 
+
+.img1 {
+  background: url('../../../assets/images/Mountain.jpeg');
+  height: 200px;
+  width: 270px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  border-radius: 50px;
+}
+
+.img2 {
+  background: url('../../../assets/images/Road.jpeg');
+  height: 200px;
+  width: 270px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  border-radius: 50px;
+}
+
+.img3 {
+  background: url('../../../assets/images/Touring.jpeg');
+  height: 200px;
+  width: 270px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  border-radius: 50px;
+}
+
+.slide1,
+.slide2,
+.slide3,
+.slide4 {
+  position: relative;
+  height: 50vh;
+  overflow: hidden;
+}
+
+.slide1::before,
+.slide2::before,
+.slide3::before,
+.slide4::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 110%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform 1s ease;
+  z-index: 1;
+}
+
+.slide1::before {
+  background-image: url('../../../assets/images/slide1.jpg');
+}
+
+.slide2::before {
+  background-image: url('../../../assets/images/slide2.jpg');
+}
+
+.slide3::before {
+  background-image: url('../../../assets/images/slide3.jpg');
+}
+
+.slide4::before {
+  background-image: url('../../../assets/images/slide4.jpg');
+}
+
+.slide1::after,
+.slide2::after,
+.slide3::after,
+.slide4::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
+  backdrop-filter: blur(2px);
+}
+
+.slide1:hover::before,
+.slide2:hover::before,
+.slide3:hover::before,
+.slide4:hover::before {
+  transform: translateX(-60px);
+}
+
+.textSlide {
+  position: absolute;
+  top: 30%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px #000000;
+  z-index: 3;
+  transition: 3s ease;
+}
+
+.slide1:hover .textSlide,
+.slide2:hover .textSlide,
+.slide3:hover .textSlide,
+.slide4:hover .textSlide {
+  transition: transform 3s ease;
+  text-shadow: 4px 4px 8px #000000;
+  transform: translate(-40%, -50%) scale(1.1);
+}
+
+.button {
+  margin: 0;
+  height: auto;
+  background: transparent;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  z-index: 3;
+  position: absolute;
+  margin-top: 280px;
+}
+
+/* button styling */
+.button {
+  --border-right: 6px;
+  --text-stroke-color: rgba(255, 255, 255, 0.6);
+  --animation-color: #37FF8B;
+  --fs-size: 1em;
+  letter-spacing: 3px;
+  text-decoration: none;
+  font-size: var(--fs-size);
+  font-family: "Arial";
+  position: relative;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--text-stroke-color);
+}
+
+/* this is the text, when you hover on button */
+.hover-text {
+  position: absolute;
+  box-sizing: border-box;
+  content: attr(data-text);
+  color: var(--animation-color);
+  width: 0%;
+  inset: 0;
+  border-right: var(--border-right) solid var(--animation-color);
+  overflow: hidden;
+  transition: 0.5s;
+  -webkit-text-stroke: 1px var(--animation-color);
+}
+
+/* hover */
+.button:hover .hover-text {
+  width: 100%;
+  filter: drop-shadow(0 0 23px var(--animation-color))
+}
+
+
 @media (max-width: 768px) {
   .card {
     margin-bottom: 30px;
@@ -371,11 +539,14 @@
   }
 
   .sigla {
-    font-size: 50px;
     left: 120px;
   }
 
   .imgHeader {
     min-height: 100vh;
+  }
+
+  .mediaPhoto {
+    margin-top: 20px;
   }
 }

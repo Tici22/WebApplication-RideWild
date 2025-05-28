@@ -193,6 +193,7 @@ label {
   align-items: center;
   z-index: 1001;         /* sopra tutto */
   user-select: none;     /* niente selezione testo */
+  z-index: 9999;        /* sopra tutto */
 }
 
 .inline-block {

@@ -4,6 +4,7 @@ import { ProductListComponent } from './features/products/product-list/product-l
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { HomeComponent } from './pages/home/home.component';
+import { ShopComponent } from './pages/shop/shop.component';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,11 @@ export const routes: Routes = [
     path: 'home',
     component: HomeComponent
   },  
+
+  {
+    path: 'shop',
+    component: ShopComponent,
+  },
   
   {
     path: '',

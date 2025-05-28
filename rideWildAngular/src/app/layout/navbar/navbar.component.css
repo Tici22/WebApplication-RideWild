@@ -240,13 +240,13 @@
 
 .dropdown {
   position: absolute;
-  top: 130%;
+  top: 100%;
   left: -30px;
   background-color: rgba(0, 0, 0, 0.95);
   color: white;
   list-style: none;
-  padding: 10px 10px;
   min-width: 200px;
+  padding-right: 30px;
   border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   opacity: 0;

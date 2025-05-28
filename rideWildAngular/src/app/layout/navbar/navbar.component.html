@@ -27,9 +27,9 @@
         </button>
       </li>
       <li class="nav-item">
-        <div routerLink="/cart" class="button">
+        <div [routerLink]="['/shop']" class="button">
           <div class="button-wrapper">
-            <div class="textshop">Buy Now</div>
+            <div class="textshop">Shop</div>
             <span class="icon">
               <svg viewBox="0 0 16 16" class="bi bi-cart2" fill="currentColor" height="16" width="16"
                 xmlns="http://www.w3.org/2000/svg">
@@ -42,10 +42,10 @@
         </div>
       </li>
       <li class="nav-item">
-        <a class="nav-link btnLogReg" [routerLink]="['/login']">Login</a>
+        <a class="nav-link btnLogReg" *ngIf="!isLoggedIn()" [routerLink]="['/login']">Login</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link btnLogReg" [routerLink]="['/register']">Register</a>
+        <a class="nav-link btnLogReg" *ngIf="!isLoggedIn()" [routerLink]="['/register']">Register</a>
       </li>
     </ul>
   </div>
