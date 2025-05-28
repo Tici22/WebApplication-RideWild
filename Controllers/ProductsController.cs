@@ -169,7 +169,7 @@ namespace Adventure19.Controllers
         ///  il metodo permette di prendere i prodotti in base alla categoria (che vanno da 5 a 10) perche da 1 a 4 sono le macrocategorie
         /// La risposta che vi arriva sarà un oggetto con il numero di prodotti e il nome della categoria e prodotti
         /// </summary>
-        /// <param name="productCategory"></param>
+
         /// <returns></returns>
 
         [HttpGet("by-category/{productCategory}")]
@@ -208,32 +208,75 @@ namespace Adventure19.Controllers
 
 
             return Ok(new
-            {                count = products.Count,
+            {
+                count = products.Count,
                 category = categoryName,
                 products
             });
         }
+        // ALtra chiamata get senza parametri Don't Touch
+        //[HttpGet("by-macro-category")]
+        //public async Task<IActionResult> GetProductsByMacroCategory()
+        //{
+        //    _logger.LogInformation("GetProductsByMacroCategory: Fetching macro categories with their subcategories and products.");
+
+        //    // Recupera tutte le macrocategorie (categorie senza padre)
+        //    var macroCategories = await _context.ProductCategories
+        //        .Where(mc => mc.ParentProductCategoryId == null)
+        //        .Select(mc => new
+        //        {
+        //            MacroCategoryId = mc.ProductCategoryId,
+        //            MacroCategoryName = mc.Name,
+        //            Categories = _context.ProductCategories
+        //                .Where(c => c.ParentProductCategoryId == mc.ProductCategoryId)
+        //                .Select(c => new
+        //                {
+        //                    CategoryId = c.ProductCategoryId,
+        //                    CategoryName = c.Name,
+        //                    Products = _context.Products
+        //                        .Where(p => p.ProductCategoryId == c.ProductCategoryId)
+        //                        .Select(p => new
+        //                        {
+        //                            p.ProductId,
+        //                            p.Name,
+        //                            p.ProductNumber,
+        //                            p.Color,
+        //                            p.StandardCost,
+        //                            p.ListPrice,
+        //                            p.Size,
+        //                            p.Weight
+        //                        }).ToList()
+        //                }).ToList()
+        //        }).ToListAsync();
+
+        //    return Ok(macroCategories);
+        //}
+
         /// <summary>
         /// Recupera le sottocategorie di un prodotto in base all'ID della categoria padre.
-        /// </summary>
-        /// <param name="parentId"></param>
+        /// </summary> 
         /// <returns></returns>
-        [HttpGet("by-parent/{parentId}")]
-        public async Task<IActionResult> GetByParentCategory(int parentId)
+        [HttpGet("by-parent")]
+        public async Task<IActionResult> GetByParentCategory()
         {
-            _logger.LogInformation("GetByParentCategory: Fetching child categories for parent ID {ParentId}", parentId);
+            _logger.LogInformation("GetByParentCategory:Result => Tutte le sottocategorie");
 
             var result = await _context.ProductCategories
-                .Where(p => p.ParentProductCategoryId == parentId)
-                .Where(p => _context.Products.Any(s => s.ProductCategoryId == p.ProductCategoryId))
-                .GroupBy(p => new { p.ParentProductCategoryId, p.Name })
-                .Select(g => new
+                .Where(p => p.ParentProductCategoryId == null)
+                .Select(mc => new
                 {
-                    g.Key.Name
+                    MacroCategoryId = mc.ProductCategoryId,
+                    MacroCategoryName = mc.Name,
+                    SubCategories = _context.ProductCategories
+                .Where(c => c.ParentProductCategoryId == mc.ProductCategoryId)
+                .Select(c => new
+                {
+                    CategoryId = c.ProductCategoryId,
+                    CategoryName = c.Name
                 })
-                .ToListAsync();
-
-            _logger.LogInformation("GetByParentCategory: Found {Count} subcategories.", result.Count);
+                .ToList()
+                })
+        .ToListAsync();
 
             return Ok(result);
         }
