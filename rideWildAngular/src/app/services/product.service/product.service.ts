@@ -30,4 +30,9 @@ export class ProductService {
     return this.http.get<ProductDto>(url);
   }
 
+  getProductsByCategory(): Observable<any> {
+    const url = `${this.productsApiUrl}/by-parent`;
+    console.log(`ProductService: Chiamata GET a ${url}`);
+    return this.http.get<any>(url);
+  }
 }

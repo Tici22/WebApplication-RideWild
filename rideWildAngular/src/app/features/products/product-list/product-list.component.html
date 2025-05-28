@@ -19,7 +19,13 @@
           <app-card [product]="product" (viewDetails)="viewDetails(product.productId)"></app-card>
         </div>
       </div>
-      <!-- <table class="product-table">
+
+
+    </div>
+
+
+
+    <!-- <table class="product-table">
         <thead>
           <tr>
             <th>Nome</th>
@@ -42,14 +48,14 @@
         </tbody>
       </table> -->
 
-      <div class="pagination-controls">
-        <button (click)="goToPreviousPage()" [disabled]="currentPage <= 1 || isLoading">
-          &laquo; Precedente
-        </button>
-        <span> Pagina {{ currentPage }} </span>
-        <button (click)="goToNextPage()" [disabled]="!hasNextPage || isLoading">
-          Successiva &raquo;
-        </button>
-      </div>
+    <div class="pagination-controls">
+      <button (click)="goToPreviousPage()" [disabled]="currentPage <= 1 || isLoading">
+        &laquo; Precedente
+      </button>
+      <span> Pagina {{ currentPage }} </span>
+      <button (click)="goToNextPage()" [disabled]="!hasNextPage || isLoading">
+        Successiva &raquo;
+      </button>
     </div>
   </div>
+</div>

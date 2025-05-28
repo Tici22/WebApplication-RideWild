@@ -10,7 +10,7 @@
   <div class="collapse navbar-collapse justify-content-between" id="navbarScroll">
     <ul class="navbar-nav">
       <div class="text-dark fw-bold fs-3 ">
-        RIDEWILD 
+        RIDEWILD
       </div>
       <!-- Se vuoi altre voci a sinistra, mettile qui -->
     </ul>
@@ -51,57 +51,16 @@
   </div>
 </div>
 
-
+<!--Nav Menu di Frax-->
 <div class="row w-100">
   <div class="custom-menu" [class.hide]="hideNavbar">
     <!-- Bikes -->
-    <div class="menu-item">
-      <span class="menu-label col-2 col-md-4">Bikes</span>
+    <div class="menu-item" *ngFor="let category of Categories">
+      <span class="menu-title">{{ category.macroCategoryName }}</span>
       <ul class="dropdown">
-        <li><a href="#">Mountain</a></li>
-        <li><a href="#">Road</a></li>
-        <li><a href="#">City</a></li>
+        <li *ngFor="let subCategory of category.subCategories">
+          <a href="#">{{ subCategory.categoryName }}</a>
       </ul>
-    </div>
-
-    <!-- Components -->
-    <div class="menu-item">
-      <span class="menu-label col-2 col-md-4">Components</span>
-      <ul class="dropdown">
-        <li><a href="#">Drivetrain</a></li>
-        <li><a href="#">Brakes</a></li>
-        <li><a href="#">Wheels</a></li>
-      </ul>
-    </div>
-
-    <!-- Clothings -->
-    <div class="menu-item">
-      <span class="menu-label col-2 col-md-4">Clothings</span>
-      <ul class="dropdown">
-        <li><a href="#">Jerseys</a></li>
-        <li><a href="#">Shorts</a></li>
-        <li><a href="#">Shoes</a></li>
-      </ul>
-    </div>
-
-    <!-- Accessories -->
-    <div class="menu-item">
-      <span class="menu-label col-2 col-md-4">Accessories</span>
-      <ul class="dropdown">
-        <li><a href="#">Lights</a></li>
-        <li><a href="#">Locks</a></li>
-        <li><a href="#">Tools</a></li>
-      </ul>
-    </div>
-
-    <!-- Best Sellers -->
-    <div class="menu-item">
-      <span class="menu-label col-2 col-md-4">Best.Sellers</span>
-      <ul class="dropdown">
-        <li><a href="#">Top Rated</a></li>
-        <li><a href="#">Hot Deals</a></li>
-        <li><a href="#">New Arrivals</a></li>
-      </ul>
-    </div>
   </div>
 </div>
+

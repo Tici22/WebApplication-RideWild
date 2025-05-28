@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { ProductService } from '../../../services/product.service/product.service';
 import { ProductDto } from '../../../models/product.models';
 import { CardComponent } from '../../../layout/card/card.component';
+import { Category } from '../../../models/Category';
 
 @Component({
   selector: 'app-product-list',
@@ -19,6 +20,9 @@ export class ProductListComponent implements OnInit {
   currentPage: number = 1;
   readonly pageSize: number = 21;
   hasNextPage: boolean = true;
+  
+
+  // Altre variabili  
 
   constructor(private productService: ProductService) { }
 
@@ -75,4 +79,6 @@ export class ProductListComponent implements OnInit {
   viewDetails(productId: number): void {
     console.log('Richiesto dettaglio per prodotto ID:', productId);
   }
+
+  
 }
