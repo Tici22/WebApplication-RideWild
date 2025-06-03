@@ -33,6 +33,7 @@ export class LoginComponent {
         this.successMessage = response.message;
         localStorage.setItem('token', response.token);
         localStorage.setItem('fullname', response.fullname);
+        
         setTimeout(() => {
           this.isLoading = false;
           this.router.navigate(['/home']);

@@ -1,0 +1,31 @@
+<div class="container-fluid mt-5">
+    <div class="row">
+        <form class="form" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+            <div *ngIf="errormessage" class="alert alert-danger">
+                {{errormessage}}
+            </div>
+            <div *ngIf="successMessage" class="alert alert-success">
+                {{successMessage}}
+            </div>
+            <div class="col-6 mb-3">
+                <label for="fullName">Nome Completo</label>
+                <input type="text" class="form-control" id="fullName" formControlName="fullName">
+            </div>
+            <div class="col-6 mb-3">
+                <label for="phone" class="form-label">Numero di Telefono</label>
+                <input type="text" class="form-control" placeholder="Numero di Telefono" formControlName="phone"
+                    id="phone">
+            </div>
+            <div class="col-6 mb-3">
+                <label for="companyName" class="form-label">Nome Azienda</label>
+                <input type="text" class="form-control" placeholder="Nome Azienda" formControlName="companyName"
+                    id="companyName">
+            </div>
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary">
+                    Aggiorna Credenziali
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

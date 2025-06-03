@@ -1,0 +1,20 @@
+.container-fluid {
+  max-width: 1000px;
+  margin-top: 50px;
+  padding: 20px;
+}
+
+.container-fluid .row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.container-fluid .col-6 {
+  flex-basis: 50%;
+  padding: 20px;
+}
+
+.text-center {
+  text-align: center;
+}

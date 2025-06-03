@@ -5,12 +5,13 @@ import { RegisterComponent } from './pages/register/register.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ShopComponent } from './pages/shop/shop.component';
 import { WishlistComponent } from './pages/wishlist/wishlist.component';
+import { OptionsComponent } from './pages/options/options.component';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
-  },  
+  },
   {
     path: 'register',
     component: RegisterComponent
@@ -18,7 +19,7 @@ export const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent
-  },  
+  },
 
   {
     path: 'shop',
@@ -28,14 +29,17 @@ export const routes: Routes = [
   {
     path: 'details/:id',
     loadComponent: () =>
-    import('./pages/details/details.component').then(m => m.DetailsComponent),
+      import('./pages/details/details.component').then(m => m.DetailsComponent),
   },
 
   {
     path: 'wishlist',
     component: WishlistComponent
   },
-  
+  {
+    path: 'options',
+    component: OptionsComponent
+  },
   {
     path: '',
     component: HomeComponent,
@@ -47,5 +51,6 @@ export const routes: Routes = [
       }
     ]
   },
-  { path: '**', redirectTo: '/home' }
+  { path: '**', redirectTo: '/home' },
+
 ];
