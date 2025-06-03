@@ -55,8 +55,27 @@ namespace Adventure19.Controllers
             return customer;
         }
 
+        [HttpGet("new/{id}")]
+        public async Task<ActionResult<User>> GetUserId (int id)
+        {
+            try
+            {
+                var customer = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+                if (customer == null)
+                    return NotFound("Utente not Found");
+                return customer;
+            }catch(Exception e)
+            {
+                return BadRequest($"Errore durante il recupero dell'utente: {e.Message}"); // Gestione degli errori generici
+
+            }
+           
+        }
+
         
         [HttpPut("modify/{id}")]
+        [Authorize]
         public async Task<IActionResult> ModifyCustomer(int id, UpdateCredentialDTO dto)
         {
             try
@@ -72,7 +91,7 @@ namespace Adventure19.Controllers
 
                 // 2. Aggiorna FullName e Email nel nuovo DB
                 user.FullName = dto.FullName;
-                user.Email = dto.Email;
+                
                 // EF Core segue le modifiche, non serve chiamare Update esplicitamente per entità tracciate
 
                 // 3. Trova il cliente nel DB vecchio usando la nuova email
@@ -80,6 +99,10 @@ namespace Adventure19.Controllers
                     .FirstOrDefaultAsync(c => c.EmailAddress == dto.Email);
                 if (customer != null)
                 {
+                    var nameParts = dto.FullName.Split(' ', 2);
+                    customer.FirstName = nameParts[0];
+                    customer.LastName = nameParts.Length > 1 ? nameParts[1] : string.Empty;
+
                     // 4. Aggiorna CompanyName e Phone se forniti
                     if (!string.IsNullOrEmpty(dto.CompanyName))
                         customer.CompanyName = dto.CompanyName;
@@ -92,7 +115,9 @@ namespace Adventure19.Controllers
                 await _context.SaveChangesAsync();
                 await _oldcontext.SaveChangesAsync();
 
-                return Ok("dati dell'utente aggiornati con successo"); // Operazione completata con successo:contentReference[oaicite:7]{index=7}
+                return Ok(new {message = "dati dell'utente aggiornati con successo" 
+                ,customer
+                }); // Operazione completata con successo:contentReference[oaicite:7]{index=7}
             }
             catch (Exception ex)
             {
