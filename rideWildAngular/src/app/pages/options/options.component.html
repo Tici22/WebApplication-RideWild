@@ -1,31 +1,110 @@
-<div class="container-fluid mt-5">
-    <div class="row">
-        <form class="form" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-            <div *ngIf="errormessage" class="alert alert-danger">
-                {{errormessage}}
-            </div>
-            <div *ngIf="successMessage" class="alert alert-success">
-                {{successMessage}}
-            </div>
-            <div class="col-6 mb-3">
-                <label for="fullName">Nome Completo</label>
-                <input type="text" class="form-control" id="fullName" formControlName="fullName">
-            </div>
-            <div class="col-6 mb-3">
-                <label for="phone" class="form-label">Numero di Telefono</label>
-                <input type="text" class="form-control" placeholder="Numero di Telefono" formControlName="phone"
-                    id="phone">
-            </div>
-            <div class="col-6 mb-3">
-                <label for="companyName" class="form-label">Nome Azienda</label>
-                <input type="text" class="form-control" placeholder="Nome Azienda" formControlName="companyName"
-                    id="companyName">
-            </div>
-            <div class="col-12 mt-4">
-                <button type="submit" class="btn btn-primary">
-                    Aggiorna Credenziali
-                </button>
-            </div>
-        </form>
+<div class="container-fluid settingsForm">
+  <div class="row">
+    <!-- Colonna Profilo -->
+    <div class="col-md-6 mb-4">
+      <form class="card p-4" [formGroup]="profileForm" (ngSubmit)="onSubmitProfile()">
+        <h2 class="text-center mb-4">Impostazioni Profilo</h2>
+
+        <div *ngIf="profileErrorMessage" class="alert alert-danger">
+          {{ profileErrorMessage }}
+        </div>
+        <div *ngIf="profileSuccessMessage" class="alert alert-success">
+          {{ profileSuccessMessage }}
+        </div>
+
+        <div class="mb-3">
+          <label for="fullName">Nome Completo</label>
+          <div class="error-message" *ngIf="isInvalidAndTouched('fullName', 'profile')">
+            {{ getErrorMessage('fullName', 'profile') }}
+          </div>
+          <input type="text" id="fullName" class="form-control" formControlName="fullName"
+            (blur)="markAsTouched('fullName', 'profile')"
+            [class.is-invalid-shake]="isInvalidAndTouched('fullName', 'profile')" />
+        </div>
+
+        <div class="mb-3">
+          <label for="emailPassword">Email</label>
+          <div class="error-message" *ngIf="isInvalidAndTouched('email', 'profile')">
+            {{ getErrorMessage('email', 'profile') }}
+          </div>
+          <input type="email" id="emailPassword" class="form-control" formControlName="email" readonly />
+        </div>
+
+        <div class="mb-3">
+          <label for="companyName">Nome Azienda</label>
+          <div class="error-message" *ngIf="isInvalidAndTouched('companyName', 'profile')">
+            {{ getErrorMessage('companyName', 'profile') }}
+          </div>
+          <input type="text" id="companyName" class="form-control" formControlName="companyName"
+            (blur)="markAsTouched('companyName', 'profile')"
+            [class.is-invalid-shake]="isInvalidAndTouched('companyName', 'profile')" />
+        </div>
+
+        <div class="mb-4">
+          <label for="phone">Numero di Telefono</label>
+          <div class="error-message" *ngIf="isInvalidAndTouched('phone', 'profile')">
+            {{ getErrorMessage('phone', 'profile') }}
+          </div>
+          <input type="text" id="phone" class="form-control" formControlName="phone"
+            (blur)="markAsTouched('phone', 'profile')"
+            [class.is-invalid-shake]="isInvalidAndTouched('phone', 'profile')" />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+          Aggiorna Credenziali
+        </button>
+      </form>
     </div>
+
+    <!-- Colonna Reset Password -->
+    <div class="col-md-6 mb-4">
+      <div class="text-center">
+        <button class="btn-outline-danger mb-3" (click)="showPasswordPanel = !showPasswordPanel">
+          {{ showPasswordPanel ? '❌ Chiudi' : '🔒 Reset Password' }}
+        </button>
+      </div>
+
+      <div [ngClass]="{'password-panel-wrapper': true, 'open': showPasswordPanel}">
+        <form class="card" [formGroup]="passwordForm" (ngSubmit)="onSubmitPassword()">
+
+          <div *ngIf="passwordErrorMessage" class="alert alert-danger">
+            {{ passwordErrorMessage }}
+          </div>
+          <div *ngIf="passwordSuccessMessage" class="alert alert-success">
+            {{ passwordSuccessMessage }}
+          </div>
+
+          <!-- Email come testo, non input -->
+          <div class="mb-3">
+            <label>Email</label>
+            <div class="form-control-plaintext">{{ profileForm.get('email')?.value }}</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="currentPassword">Password Attuale</label>
+            <div class="error-message" *ngIf="isInvalidAndTouched('currentPassword', 'password')">
+              {{ getErrorMessage('currentPassword', 'password') }}
+            </div>
+            <input type="password" id="currentPassword" class="form-control" formControlName="currentPassword"
+              (blur)="markAsTouched('currentPassword', 'password')"
+              [class.is-invalid-shake]="isInvalidAndTouched('currentPassword', 'password')" />
+          </div>
+
+          <div class="mb-4">
+            <label for="newPassword">Nuova Password</label>
+            <div class="error-message" *ngIf="isInvalidAndTouched('newPassword', 'password')">
+              {{ getErrorMessage('newPassword', 'password') }}
+            </div>
+            <input type="password" id="newPassword" class="form-control" formControlName="newPassword"
+              (blur)="markAsTouched('newPassword', 'password')"
+              [class.is-invalid-shake]="isInvalidAndTouched('newPassword', 'password')" />
+          </div>
+
+          <button type="submit" class="btn btn-danger w-100">
+            Cambia Password
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
