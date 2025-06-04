@@ -172,20 +172,20 @@ namespace Adventure19.Controllers
 
         /// <returns></returns>
 
-        [HttpGet("by-category/{productCategory}")]
-        public async Task<IActionResult> GetProductsForCategory(int productCategory)
+        [HttpGet("by-category/{productCategory}")] //Product Name  => prende una string
+        public async Task<IActionResult> GetProductsForCategory(string productCategory)
         {
             _logger.LogInformation("GetProductsForCategory: Fetching products for category {CategoryId}", productCategory);
 
             //Recupero della categoria
             var categoryName = await _context.ProductCategories
-            .Where(c => c.ProductCategoryId == productCategory)
+            .Where(c => c.Name == productCategory)
             .Select(c => c.Name)
             .FirstOrDefaultAsync();
 
             //Recupero dei prodotti
             var products = await _context.Products
-                .Where(p => p.ProductCategory.ProductCategoryId != null && p.ProductCategory.ProductCategoryId == productCategory)
+                .Where(p => p.ProductCategory.Name != null && p.ProductCategory.Name == productCategory)
                 .Select(p => new ProductDto
                 {
                     ProductId = p.ProductId,
