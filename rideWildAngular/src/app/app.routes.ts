@@ -6,6 +6,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { ShopComponent } from './pages/shop/shop.component';
 import { WishlistComponent } from './pages/wishlist/wishlist.component';
 import { OptionsComponent } from './pages/options/options.component';
+import { CartComponent } from './pages/cart/cart.component';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,10 @@ export const routes: Routes = [
   {
     path: 'shop',
     component: ShopComponent,
+  },
+  {
+    path: 'cart',
+    component: CartComponent
   },
 
   {

@@ -1,3 +1,26 @@
+.back-button {
+  background-color: transparent;
+  border: 2px solid #007bff;
+  color: #007bff;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  z-index: 1000;
+}
+
+.back-button:hover,
+.back-button:focus {
+  background-color: #007bff;
+  color: white;
+  outline: none;
+}
+
+
+
 .details-container {
   max-width: 900px;
   margin: 180px auto 150px auto;
@@ -6,7 +29,7 @@
   gap: 40px;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -64,10 +87,10 @@
 }
 
 .image-container {
-  width: 320px; 
-  height: 320px; 
+  width: 320px;
+  height: 320px;
   margin: 20px auto;
-  overflow: hidden; 
+  overflow: hidden;
   border-radius: 12px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
   position: relative;
@@ -100,7 +123,7 @@
   height: 320px;
   overflow: hidden;
   border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
   position: relative;
 }
 
@@ -162,6 +185,34 @@
   user-select: none;
 }
 
+.notification-message {
+  margin-top: 12px;
+  padding: 10px 16px;
+  background-color: #d1ffd6; 
+  color: #237a00;           
+  border: 1px solid #237a00;
+  border-radius: 6px;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeInOut 3s forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+
 .wishlist-btn {
   background-color: #ff4081;
   color: white;
@@ -182,22 +233,116 @@
   background-color: #019a75;
 }
 
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.quantity-button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.quantity-button:hover {
+  background-color: #d0d0d0;
+}
+
+.quantity-display {
+  width: 3rem;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.3rem;
+}
 
 
 
-/* Responsive */
-@media (max-width: 720px) {
-  .details-card {
+@media (max-width: 480px) {
+  .details-container {
+    margin: 127px 10px 80px 10px;
+    padding-left: 15px;
+    padding-right: 15px;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
   }
 
+  .image-section,
   .image-wrapper {
+    width: 100%;
     max-width: 100%;
+    height: auto;
+    box-shadow: none;
+  }
+
+  .product-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .info-section,
+  .details-content {
+    width: 100%;
     flex: none;
   }
 
-  .details-content {
-    flex: none;
+  .buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn,
+  .back-button {
+    width: 100%;
+    text-align: center;
   }
 }
+
+/* Tablet extra */
+@media (max-width: 600px) and (min-width: 481px) {
+  .details-container {
+    margin: 140px 20px 100px 20px;
+    padding: 18px;
+    gap: 25px;
+  }
+
+  .image-section,
+  .image-wrapper {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .product-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .info-section,
+  .details-content {
+    width: 100%;
+    flex: none;
+  }
+
+  .buttons {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .btn,
+  .back-button {
+    flex: 1 1 48%;
+  }
+}
+

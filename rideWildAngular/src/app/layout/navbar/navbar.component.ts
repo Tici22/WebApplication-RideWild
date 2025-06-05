@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product.service/product.service';
 import { Category } from '../../models/Category';
 import { WishlistService } from '../../services/product.service/wishlist.service';
+import { CartService } from '../../services/product.service/cart.service';
 
 @Component({
   selector: 'app-navbar',
@@ -16,11 +17,11 @@ import { WishlistService } from '../../services/product.service/wishlist.service
 export class NavbarComponent {
   private lastScrollTop = 0;
   public hideNavbar = false;
-  public isScrolled = false; // aggiunto
+  public isScrolled = false;
   Categories: Category[] = [];
   wishlistCount: number = 0;
 
-  constructor(private router: Router, private productService: ProductService, private wishlistService: WishlistService) { }
+  constructor(private router: Router, private productService: ProductService, private wishlistService: WishlistService, private cartService: CartService) { }
 
 
   ngOnInit(): void {

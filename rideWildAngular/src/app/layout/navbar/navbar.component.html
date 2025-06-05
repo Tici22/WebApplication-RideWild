@@ -44,6 +44,7 @@
       <li class="nav-item">
         <a class="nav-link btnLogReg" *ngIf="isLoggedIn()" [routerLink]="['/options']">Options</a>
       </li>
+      <!-- Lista desideri -->
       <li class="nav-item">
         <div class="wishlist-icon" routerLink="/wishlist" title="Lista desideri">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
@@ -53,7 +54,23 @@
           </svg>
           <span class="counter" *ngIf="wishlistCount > 0">{{ wishlistCount }}</span>
         </div>
+
+        <!-- Carrello -->
+
+      <li class="nav-item">
+        <div class="wishlist-icon" routerLink="/cart" title="Carrello">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler-shopping-cart">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <circle cx="6" cy="19" r="2" />
+            <circle cx="17" cy="19" r="2" />
+            <path d="M17 17H6V3H4" />
+            <path d="M6 5L20 5L18 12H6" />
+          </svg>
+        </div>
       </li>
+
+
       <li class="nav-item">
         <a class="nav-link btnLogReg" *ngIf="!isLoggedIn()" [routerLink]="['/login']">Login</a>
       </li>
@@ -71,11 +88,7 @@
       <span class="menu-title">{{ category.macroCategoryName }}</span>
       <ul class="dropdown">
         <li *ngFor="let subCategory of category.subCategories">
-          <a
-            [routerLink]="['/shop']"
-            [queryParams]="{ category: subCategory.categoryName }"
-            class="dropdown-link"
-          >
+          <a [routerLink]="['/shop']" [queryParams]="{ category: subCategory.categoryName }" class="dropdown-link">
             {{ subCategory.categoryName }}
           </a>
         </li>

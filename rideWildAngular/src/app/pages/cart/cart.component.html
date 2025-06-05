@@ -1,0 +1,65 @@
+<!-- LOADER BICI -->
+<div class="loader-overlay" *ngIf="isLoading">
+  <svg class="bike" viewBox="0 0 48 30" width="96" height="60" aria-label="Loading animation" role="img">
+    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1">
+      <g transform="translate(9.5,19)">
+        <circle class="bike__tire" r="9" stroke-dasharray="56.549 56.549" />
+        <g class="bike__spokes-spin" stroke-dasharray="31.416 31.416" stroke-dashoffset="-23.562">
+          <circle class="bike__spokes" r="5" />
+          <circle class="bike__spokes" r="5" transform="rotate(180,0,0)" />
+        </g>
+      </g>
+      <g transform="translate(24,19)">
+        <g class="bike__pedals-spin" stroke-dasharray="25.133 25.133" stroke-dashoffset="-21.991"
+          transform="rotate(67.5,0,0)">
+          <circle class="bike__pedals" r="4" />
+          <circle class="bike__pedals" r="4" transform="rotate(180,0,0)" />
+        </g>
+      </g>
+      <g transform="translate(38.5,19)">
+        <circle class="bike__tire" r="9" stroke-dasharray="56.549 56.549" />
+        <g class="bike__spokes-spin" stroke-dasharray="31.416 31.416" stroke-dashoffset="-23.562">
+          <circle class="bike__spokes" r="5" />
+          <circle class="bike__spokes" r="5" transform="rotate(180,0,0)" />
+        </g>
+      </g>
+      <polyline class="bike__seat" points="14 3,18 3" stroke-dasharray="5 5" />
+      <polyline class="bike__body" points="16 3,24 19,9.5 19,18 8,34 7,24 19" stroke-dasharray="79 79" />
+      <path class="bike__handlebars" d="m30,2h6s1,0,1,1-1,1-1,1" stroke-dasharray="10 10" />
+      <polyline class="bike__front" points="32.5 2,38.5 19" stroke-dasharray="19 19" />
+    </g>
+  </svg>
+</div>
+
+<div class="cart-container" *ngIf="cart.length > 0; else emptyCart">
+  <h2 class="text-center text-white">Il tuo carrello</h2>
+
+  <div class="cart-row" *ngFor="let item of cart">
+    <div class="cart-image">
+      <img src="/images/placeholderbike.jpg" alt="{{ item.product.name }}" />
+    </div>
+    <div class="cart-details">
+      <h3>{{ item.product.name }}</h3>
+      <p>Codice: {{ item.product.productNumber }}</p>
+      <p>Quantità: {{ item.quantity }}</p>
+      <button (click)="removeFromCart(item.product.productId)">Rimuovi 1</button>
+    </div>
+    <div class="cart-price">
+      €{{ (item.product.listPrice * item.quantity) | number:'1.2-2' }}
+    </div>
+  </div>
+
+  <!-- Totale -->
+  <div class="cart-total-row">
+    <div class="cart-total-label">Prezzo Totale:</div>
+    <div class="cart-total-price">€{{ getTotalPrice() | number:'1.2-2' }}</div>
+  </div>
+
+  <div class="text-center mt-4">
+    <button (click)="clearCart()" class="btnClear">Svuota carrello</button>
+  </div>
+</div>
+
+<ng-template #emptyCart>
+  <p class="text-center text-white fs-3 Nothing">Il carrello è vuoto.</p>
+</ng-template>

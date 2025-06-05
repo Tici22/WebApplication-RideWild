@@ -1,0 +1,238 @@
+* {
+  border: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --primary: #fff; /* bianco puro */
+  --trans-dur: 0.3s;
+  font-size: calc(16px + (32 - 16) * (100vw - 320px) / (2560 - 320));
+}
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(38, 59, 80);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  user-select: none;
+}
+.bike {
+  display: block;
+  width: 150px;
+  height: auto;
+  color: var(--primary);
+}
+.bike__body,
+.bike__front,
+.bike__handlebars,
+.bike__pedals,
+.bike__pedals-spin,
+.bike__seat,
+.bike__spokes,
+.bike__spokes-spin,
+.bike__tire {
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  stroke: var(--primary);
+  transition: stroke var(--trans-dur);
+}
+.bike__front {
+  animation-name: bikeFront;
+}
+.bike__handlebars {
+  animation-name: bikeHandlebars;
+}
+.bike__pedals {
+  animation-name: bikePedals;
+}
+.bike__pedals-spin {
+  animation-name: bikePedalsSpin;
+}
+.bike__seat {
+  animation-name: bikeSeat;
+}
+.bike__spokes {
+  animation-name: bikeSpokes;
+}
+.bike__spokes-spin {
+  animation-name: bikeSpokesSpin;
+}
+.bike__tire {
+  animation-name: bikeTire;
+}
+
+/* Animations */
+@keyframes bikeBody {
+  from { stroke-dashoffset: 79; }
+  33%, 67% { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -79; }
+}
+@keyframes bikeFront {
+  from { stroke-dashoffset: 19; }
+  33%, 67% { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -19; }
+}
+@keyframes bikeHandlebars {
+  from { stroke-dashoffset: 10; }
+  33%, 67% { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -10; }
+}
+@keyframes bikePedals {
+  from {
+    animation-timing-function: ease-in;
+    stroke-dashoffset: -25.133;
+  }
+  33%, 67% {
+    animation-timing-function: ease-out;
+    stroke-dashoffset: -21.991;
+  }
+  to {
+    stroke-dashoffset: -25.133;
+  }
+}
+@keyframes bikePedalsSpin {
+  from { transform: rotate(0.1875turn); }
+  to { transform: rotate(3.1875turn); }
+}
+@keyframes bikeSeat {
+  from { stroke-dashoffset: 5; }
+  33%, 67% { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -5; }
+}
+@keyframes bikeSpokes {
+  from {
+    animation-timing-function: ease-in;
+    stroke-dashoffset: -31.416;
+  }
+  33%, 67% {
+    animation-timing-function: ease-out;
+    stroke-dashoffset: -23.562;
+  }
+  to {
+    stroke-dashoffset: -31.416;
+  }
+}
+@keyframes bikeSpokesSpin {
+  from { transform: rotate(0); }
+  to { transform: rotate(3turn); }
+}
+@keyframes bikeTire {
+  from {
+    animation-timing-function: ease-in;
+    stroke-dashoffset: 56.549;
+    transform: rotate(0);
+  }
+  33% {
+    stroke-dashoffset: 0;
+    transform: rotate(0.33turn);
+  }
+  67% {
+    animation-timing-function: ease-out;
+    stroke-dashoffset: 0;
+    transform: rotate(0.67turn);
+  }
+  to {
+    stroke-dashoffset: -56.549;
+    transform: rotate(1turn);
+  }
+}
+
+
+.cart-container {
+  max-width: 1000px;
+  margin: 180px auto 40px;
+  padding: 0 16px;
+}
+
+.cart-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1e2a38;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  gap: 16px;
+  color: white;
+}
+
+.cart-image img {
+  width: 100px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.cart-details {
+  flex-grow: 1;
+}
+
+.cart-details h3 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.cart-details p {
+  margin: 0 0 12px;
+}
+
+.cart-details button {
+  background-color: #ff4081;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.cart-details button:hover {
+  background-color: #e73370;
+}
+
+.cart-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 24px;
+  gap: 12px;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.cart-total-label {
+  margin-right: 8px;
+}
+
+.Nothing {
+  margin-top: 200px;
+  margin-bottom: 200px;
+  color: white;
+}
+
+.btnClear {
+  background-color: #ff4081;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  margin-top: 24px;
+}
+
+.btnClear:hover {
+  background-color: #e73370;
+}
