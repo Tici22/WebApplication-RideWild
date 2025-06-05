@@ -56,7 +56,7 @@ namespace Adventure19.Controllers
         }
 
         [HttpGet("new/{id}")]
-        public async Task<ActionResult<User>> GetUserId (int id)
+        public async Task<ActionResult<User>> GetUserId(int id)
         {
             try
             {
@@ -65,15 +65,16 @@ namespace Adventure19.Controllers
                 if (customer == null)
                     return NotFound("Utente not Found");
                 return customer;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return BadRequest($"Errore durante il recupero dell'utente: {e.Message}"); // Gestione degli errori generici
 
             }
-           
+
         }
 
-        
+
         [HttpPut("modify/{id}")]
         [Authorize]
         public async Task<IActionResult> ModifyCustomer(int id, UpdateCredentialDTO dto)
@@ -91,7 +92,7 @@ namespace Adventure19.Controllers
 
                 // 2. Aggiorna FullName e Email nel nuovo DB
                 user.FullName = dto.FullName;
-                
+
                 // EF Core segue le modifiche, non serve chiamare Update esplicitamente per entità tracciate
 
                 // 3. Trova il cliente nel DB vecchio usando la nuova email
@@ -115,8 +116,11 @@ namespace Adventure19.Controllers
                 await _context.SaveChangesAsync();
                 await _oldcontext.SaveChangesAsync();
 
-                return Ok(new {message = "dati dell'utente aggiornati con successo" 
-                ,customer
+                return Ok(new
+                {
+                    message = "dati dell'utente aggiornati con successo"
+                ,
+                    customer
                 }); // Operazione completata con successo:contentReference[oaicite:7]{index=7}
             }
             catch (Exception ex)
@@ -271,17 +275,106 @@ namespace Adventure19.Controllers
                 return BadRequest(e.InnerException?.Message ?? e.Message);
             }
         }
+        // Mostra gli indirizzi del cliente
+        [HttpGet("{Customerid}/address")]
+        public async Task<IActionResult> GetAddress(int Customerid)
+        {
+            var email = await _context.Users
+            .Where(u => u.Id == Customerid)
+            .Select(u => u.Email)
+            .FirstOrDefaultAsync();
 
+            if (string.IsNullOrEmpty(email))
+                return NotFound("Utente non trovato.");
 
+            //  Prendi il cliente dal vecchio DB in base all'email
+            var customer = await _oldcontext.Customers
+                .Include(c => c.CustomerAddresses.Where(ca => ca.Address != null))
+                    .ThenInclude(ca => ca.Address)
+                .Where(c => c.EmailAddress == email && c.CustomerAddresses.Any(ca => ca.Address != null))
+                .FirstOrDefaultAsync();
+
+            if (customer == null)
+                return NotFound("Cliente non trovato nel vecchio database.");
+
+            // Proietti solo gli indirizzi
+            var addresses = customer.CustomerAddresses.Select(ca => new
+            {
+                ca.AddressId,
+                ca.AddressType,
+                ca.Address.AddressLine1,
+                ca.Address.AddressLine2,
+                ca.Address.City,
+                ca.Address.StateProvince,
+                ca.Address.CountryRegion,
+                ca.Address.PostalCode
+            }).ToList();
+
+            return Ok(addresses);
+
+        }
+
+        //POST: api/Customers/{id}/address/add
         /// <summary>
-        /// aggiorna le credenziali del cliente.
-        /// 
+        /// Il metodo permette l'aggiunta di un indirizzo il quale può essere utilizzato per spedire la merce 
         /// </summary>
-        /// 
+        /// <param name="id"> Passaggio dell'id dell'utente</param>
+        /// <param name="dto"> Corpo per effettuare la richiesta</param>
         /// <returns></returns>
-        
+        [HttpPost("{id}/address/add")]
+        public async Task<IActionResult> AddAddressInfo(int id, [FromBody] AddressDTO dto)
+        { // cerca nel nuovo db
+            var response = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (response == null)
+            {
+                return NotFound("Utente non trovato.");
+            }
 
+            // cerca nel vecchio db e crea il nuovo indirizzo
+            var customer = await _oldcontext.Customers
+                .Include(c => c.CustomerAddresses)
+                .FirstOrDefaultAsync(c => c.EmailAddress == response.Email);
 
+            if (customer == null)
+            {
+                return NotFound("Cliente non trovato nel vecchio database.");
+            }
+
+            var existAddress = customer.CustomerAddresses.Any(ca =>
+            ca.Address.AddressLine1 == dto.AddressLine1 &&
+            ca.Address.City == dto.City &&
+            ca.Address.StateProvince == dto.StateProvince &&
+            ca.Address.CountryRegion == dto.CountryRegion &&
+            ca.Address.PostalCode == dto.PostalCode &&
+            ca.AddressType == dto.AddressType);
+            //Fa un check Se questo utente ha lo stesso indirizzo
+            if (existAddress)
+            {
+                return BadRequest("Questo indirizzo esiste gia");
+            }
+
+            var newAddress = new Address
+            {
+                AddressLine1 = dto.AddressLine1,
+
+                City = dto.City,
+                StateProvince = dto.StateProvince,
+                CountryRegion = dto.CountryRegion,
+                PostalCode = dto.PostalCode
+            };
+            _oldcontext.Addresses.Add(newAddress);
+            await _oldcontext.SaveChangesAsync();
+            // Aggiungi l'indirizzo al cliente
+            var customerAddress = new CustomerAddress
+            {
+                CustomerId = customer.CustomerId,
+                AddressId = newAddress.AddressId,
+                AddressType = dto.AddressType
+            };
+            customer.CustomerAddresses.Add(customerAddress);
+            await _oldcontext.SaveChangesAsync();
+            return Ok(new { message = "Indirizzo aggiunto con successo.", dto.AddressId,response.Id });
+        }
 
 
 
@@ -307,7 +400,8 @@ namespace Adventure19.Controllers
 
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword(string email, string newPassword, string? currentPassword = null)
+        [Authorize]
+        public async Task<IActionResult> ResetPassword(string email, string newPassword, string currentPassword )
         {
             //Cerca prima nel nuovo DB =>utente già migrato 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -325,7 +419,7 @@ namespace Adventure19.Controllers
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
-                return Ok("Password aggiornata con successo.");
+                return Ok(new { messagge = "Password aggiornata con successo." });
             }
 
             //  cerca nel vecchio DB

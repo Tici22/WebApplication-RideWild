@@ -214,43 +214,7 @@ namespace Adventure19.Controllers
                 products
             });
         }
-        // ALtra chiamata get senza parametri Don't Touch
-        //[HttpGet("by-macro-category")]
-        //public async Task<IActionResult> GetProductsByMacroCategory()
-        //{
-        //    _logger.LogInformation("GetProductsByMacroCategory: Fetching macro categories with their subcategories and products.");
-
-        //    // Recupera tutte le macrocategorie (categorie senza padre)
-        //    var macroCategories = await _context.ProductCategories
-        //        .Where(mc => mc.ParentProductCategoryId == null)
-        //        .Select(mc => new
-        //        {
-        //            MacroCategoryId = mc.ProductCategoryId,
-        //            MacroCategoryName = mc.Name,
-        //            Categories = _context.ProductCategories
-        //                .Where(c => c.ParentProductCategoryId == mc.ProductCategoryId)
-        //                .Select(c => new
-        //                {
-        //                    CategoryId = c.ProductCategoryId,
-        //                    CategoryName = c.Name,
-        //                    Products = _context.Products
-        //                        .Where(p => p.ProductCategoryId == c.ProductCategoryId)
-        //                        .Select(p => new
-        //                        {
-        //                            p.ProductId,
-        //                            p.Name,
-        //                            p.ProductNumber,
-        //                            p.Color,
-        //                            p.StandardCost,
-        //                            p.ListPrice,
-        //                            p.Size,
-        //                            p.Weight
-        //                        }).ToList()
-        //                }).ToList()
-        //        }).ToListAsync();
-
-        //    return Ok(macroCategories);
-        //}
+       
 
         /// <summary>
         /// Recupera le sottocategorie di un prodotto in base all'ID della categoria padre.
