@@ -151,6 +151,7 @@ export class OptionsComponent implements OnInit {
 
       this.authService.resetPassword(email, newPassword, currentPassword).subscribe({
         next: (res) => {
+          console.log('Password reset response:', res);
           this.passwordSuccessMessage = res.message || 'Password aggiornata con successo.';
           this.passwordForm.reset({ email }); 
         },

@@ -126,6 +126,13 @@ export class AuthService {
   }
 
   resetPassword(email: string, newPassword: string, currentPassword?: string | null): Observable<any> {
+    const token = this.getToken();
+    if (!token) {
+      console.error('Token non trovato');
+      return throwError(() => new Error('Non autorizzato: Token non trovato'));
+    }
+
+
     let params = new HttpParams()
       .set('email', email)
       .set('newPassword', newPassword);
@@ -134,7 +141,12 @@ export class AuthService {
       params = params.set('currentPassword', currentPassword);
     }
 
-    return this.http.post<any>(`${this.baseApiUrl}/reset-password`, null, { params });
+    // Aggiungi il token come header
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.post<any>(`${this.baseApiUrl}/reset-password`, null, { params ,headers});
   }
 
   logout(): void {
