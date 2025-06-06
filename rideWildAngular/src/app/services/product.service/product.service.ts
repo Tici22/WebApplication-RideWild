@@ -35,4 +35,16 @@ export class ProductService {
     console.log(`ProductService: Chiamata GET a ${url}`);
     return this.http.get<any>(url);
   }
+
+
+  /**
+   * Mostra i prodotti per categoria specificata.
+   * @param category La categoria dei prodotti da mostrare.
+   * @returns Un Observable che emette un array di ProductDto.
+   */
+  ShowProductForCategory(category: string): Observable<{ products: ProductDto[] }> {
+    const url = `${this.productsApiUrl}/by-category/${encodeURIComponent(category)}`;
+    console.log(`ProductService: Chiamata GET a ${url}`);
+    return this.http.get<{products:ProductDto[]}>(url);
+  }
 }

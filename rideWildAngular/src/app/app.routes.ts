@@ -50,7 +50,7 @@ export const routes: Routes = [
     component: HomeComponent,
     children: [
       {
-        path: '',
+        path: 'products',
         component: ProductListComponent,
         pathMatch: 'full'
       }

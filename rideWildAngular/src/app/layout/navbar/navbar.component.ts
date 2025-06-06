@@ -25,6 +25,7 @@ export class NavbarComponent {
 
 
   ngOnInit(): void {
+    // Inizializza lo stato del caricamento dei prodotti per categoria
     this.ShowCategoryProducts();
 
     this.wishlistService.wishlistCount$.subscribe(count => {
@@ -77,6 +78,12 @@ export class NavbarComponent {
         console.error('Errore durante il caricamento delle categorie:', error);
       }
     });
+  }
+
+
+  //Quando l'utente clicca su una categoria, reindirizza alla pagina dello shop con il parametro della categoria
+  goToCategory(categoryName:string):void {
+    this.router.navigate(['/shop'], { queryParams: { category: categoryName } });
   }
 }
 

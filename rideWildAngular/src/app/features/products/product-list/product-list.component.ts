@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../../services/product.service/product.service';
 import { ProductDto } from '../../../models/product.models';
 import { CardComponent } from '../../../layout/card/card.component';
@@ -19,11 +19,18 @@ export class ProductListComponent implements OnInit {
   currentPage: number = 1;
   readonly pageSize: number = 21;
   hasNextPage: boolean = true;
+  selectedCategory: string | null = null;
+  constructor(private productService: ProductService, private route: ActivatedRoute) { }
 
-  constructor(private productService: ProductService) { }
 
+  //Inizializza il componente e recupera i parametri della query
+  // per la categoria selezionata, quindi carica i prodotti per la pagina iniziale
   ngOnInit(): void {
+    this.route.queryParams.subscribe(params => { this.selectedCategory = params['category'] || null; 
+    this.currentPage = 1;
+    // Carica i prodotti per la pagina iniziale
     this.loadProductsForPage(this.currentPage);
+    });
   }
 
   loadProductsForPage(page: number): void {
@@ -34,36 +41,50 @@ export class ProductListComponent implements OnInit {
 
     this.isLoading = true;
 
-    this.productService.getProducts(page, this.pageSize).subscribe({
-      next: (data) => {
-        // Aspetta 2.5 secondi prima di aggiornare lo stato e la pagina,
-        // così il loader resta visibile abbastanza a lungo
-        setTimeout(() => {
-          if (data && data.length > 0) {
-            this.products = data;
-            this.currentPage = page;
-            this.hasNextPage = data.length === this.pageSize;
-          } else {
-            if (page > 1) {
-              this.currentPage = page - 1;
-            } else {
-              this.products = [];
-            }
-            this.hasNextPage = false;
-          }
-          this.isLoading = false;
-        }, 1500);
-      },
-      error: (error) => {
-        console.error('Errore API durante caricamento prodotti:', error);
-        // Anche in caso di errore attendi 2.5 secondi prima di rimuovere il loader
-        setTimeout(() => {
+
+    if (this.selectedCategory) {
+      this.productService.ShowProductForCategory(this.selectedCategory).subscribe({
+        next: (data: any) => { this.products = data.products; this.isLoading = false; },
+        error: (error) => {
+          console.error('Errore API durante caricamento prodotti per categoria:', error);
           this.isLoading = false;
           this.products = [];
-          this.hasNextPage = false;
-        }, 1500);
-      }
-    });
+        }
+
+      });
+    } else {
+      this.productService.getProducts(page, this.pageSize).subscribe({
+        next: (data) => {
+          // Aspetta 2.5 secondi prima di aggiornare lo stato e la pagina,
+          // così il loader resta visibile abbastanza a lungo
+          setTimeout(() => {
+            if (data && data.length > 0) {
+              this.products = data;
+              this.currentPage = page;
+              this.hasNextPage = data.length === this.pageSize;
+            } else {
+              if (page > 1) {
+                this.currentPage = page - 1;
+              } else {
+                this.products = [];
+              }
+              this.hasNextPage = false;
+            }
+            this.isLoading = false;
+          }, 1500);
+        },
+        error: (error) => {
+          console.error('Errore API durante caricamento prodotti:', error);
+          // Anche in caso di errore attendi 2.5 secondi prima di rimuovere il loader
+          setTimeout(() => {
+            this.isLoading = false;
+            this.products = [];
+            this.hasNextPage = false;
+          }, 1500);
+        }
+      });
+    }
+
   }
 
   goToPreviousPage(): void {

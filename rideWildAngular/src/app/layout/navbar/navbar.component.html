@@ -88,7 +88,8 @@
       <span class="menu-title">{{ category.macroCategoryName }}</span>
       <ul class="dropdown">
         <li *ngFor="let subCategory of category.subCategories">
-          <a [routerLink]="['/shop']" [queryParams]="{ category: subCategory.categoryName }" class="dropdown-link">
+          <!--Collegamento del click sulla categoria-->
+          <a (click)="goToCategory(subCategory.categoryName)" class="dropdown-link">
             {{ subCategory.categoryName }}
           </a>
         </li>
