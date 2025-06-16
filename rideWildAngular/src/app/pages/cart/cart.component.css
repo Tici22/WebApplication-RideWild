@@ -4,11 +4,13 @@
   margin: 0;
   padding: 0;
 }
+
 :root {
-  --primary: #fff; /* bianco puro */
+  --primary: #fff;
   --trans-dur: 0.3s;
   font-size: calc(16px + (32 - 16) * (100vw - 320px) / (2560 - 320));
 }
+
 .loader-overlay {
   position: fixed;
   inset: 0;
@@ -19,12 +21,14 @@
   z-index: 9999;
   user-select: none;
 }
+
 .bike {
   display: block;
   width: 150px;
   height: auto;
   color: var(--primary);
 }
+
 .bike__body,
 .bike__front,
 .bike__handlebars,
@@ -40,112 +44,186 @@
   stroke: var(--primary);
   transition: stroke var(--trans-dur);
 }
+
 .bike__front {
   animation-name: bikeFront;
 }
+
 .bike__handlebars {
   animation-name: bikeHandlebars;
 }
+
 .bike__pedals {
   animation-name: bikePedals;
 }
+
 .bike__pedals-spin {
   animation-name: bikePedalsSpin;
 }
+
 .bike__seat {
   animation-name: bikeSeat;
 }
+
 .bike__spokes {
   animation-name: bikeSpokes;
 }
+
 .bike__spokes-spin {
   animation-name: bikeSpokesSpin;
 }
+
 .bike__tire {
   animation-name: bikeTire;
 }
 
-/* Animations */
 @keyframes bikeBody {
-  from { stroke-dashoffset: 79; }
-  33%, 67% { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: -79; }
+  from {
+    stroke-dashoffset: 79;
+  }
+
+  33%,
+  67% {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -79;
+  }
 }
+
 @keyframes bikeFront {
-  from { stroke-dashoffset: 19; }
-  33%, 67% { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: -19; }
+  from {
+    stroke-dashoffset: 19;
+  }
+
+  33%,
+  67% {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -19;
+  }
 }
+
 @keyframes bikeHandlebars {
-  from { stroke-dashoffset: 10; }
-  33%, 67% { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: -10; }
+  from {
+    stroke-dashoffset: 10;
+  }
+
+  33%,
+  67% {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -10;
+  }
 }
+
 @keyframes bikePedals {
   from {
     animation-timing-function: ease-in;
     stroke-dashoffset: -25.133;
   }
-  33%, 67% {
+
+  33%,
+  67% {
     animation-timing-function: ease-out;
     stroke-dashoffset: -21.991;
   }
+
   to {
     stroke-dashoffset: -25.133;
   }
 }
+
 @keyframes bikePedalsSpin {
-  from { transform: rotate(0.1875turn); }
-  to { transform: rotate(3.1875turn); }
+  from {
+    transform: rotate(0.1875turn);
+  }
+
+  to {
+    transform: rotate(3.1875turn);
+  }
 }
+
 @keyframes bikeSeat {
-  from { stroke-dashoffset: 5; }
-  33%, 67% { stroke-dashoffset: 0; }
-  to { stroke-dashoffset: -5; }
+  from {
+    stroke-dashoffset: 5;
+  }
+
+  33%,
+  67% {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -5;
+  }
 }
+
 @keyframes bikeSpokes {
   from {
     animation-timing-function: ease-in;
     stroke-dashoffset: -31.416;
   }
-  33%, 67% {
+
+  33%,
+  67% {
     animation-timing-function: ease-out;
     stroke-dashoffset: -23.562;
   }
+
   to {
     stroke-dashoffset: -31.416;
   }
 }
+
 @keyframes bikeSpokesSpin {
-  from { transform: rotate(0); }
-  to { transform: rotate(3turn); }
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(3turn);
+  }
 }
+
 @keyframes bikeTire {
   from {
     animation-timing-function: ease-in;
     stroke-dashoffset: 56.549;
     transform: rotate(0);
   }
+
   33% {
     stroke-dashoffset: 0;
     transform: rotate(0.33turn);
   }
+
   67% {
     animation-timing-function: ease-out;
     stroke-dashoffset: 0;
     transform: rotate(0.67turn);
   }
+
   to {
     stroke-dashoffset: -56.549;
     transform: rotate(1turn);
   }
 }
 
-
 .cart-container {
   max-width: 1000px;
   margin: 180px auto 40px;
   padding: 0 16px;
+  background-color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  position: relative;
 }
 
 .cart-row {
@@ -156,7 +234,7 @@
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   gap: 16px;
   color: white;
 }
@@ -165,6 +243,7 @@
   width: 100px;
   height: auto;
   border-radius: 8px;
+  object-fit: cover;
 }
 
 .cart-details {
@@ -174,10 +253,12 @@
 .cart-details h3 {
   margin: 0 0 8px;
   font-size: 1.2rem;
+  color: #f0f0f0;
 }
 
 .cart-details p {
   margin: 0 0 12px;
+  color: #ccc;
 }
 
 .cart-details button {
@@ -198,6 +279,7 @@
 .cart-price {
   font-size: 1.2rem;
   font-weight: bold;
+  color: #e9ecef;
 }
 
 .cart-total-row {
@@ -209,6 +291,8 @@
   color: white;
   font-size: 1.3rem;
   font-weight: bold;
+  border-top: 2px solid #666;
+  padding-top: 15px;
 }
 
 .cart-total-label {
@@ -219,20 +303,280 @@
   margin-top: 200px;
   margin-bottom: 200px;
   color: white;
+  text-align: center;
+  font-size: 1.5rem;
 }
 
-.btnClear {
+.btnClear,
+.btnBuy {
   background-color: #ff4081;
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 8px 12px;
+  padding: 10px 20px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   margin-top: 24px;
+  display: inline-block;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
-.btnClear:hover {
+.btnClear:hover,
+.btnBuy:hover {
   background-color: #e73370;
+  transform: translateY(-2px);
+}
+
+.payment-section {
+  background-color: #444;
+  padding: 25px;
+  border-radius: 8px;
+  margin-top: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.payment-section h3 {
+  color: #f8f9fa;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #e9ecef;
+  font-weight: bold;
+}
+
+.form-control {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #666;
+  border-radius: 5px;
+  background-color: #555;
+  color: white;
+  font-size: 1em;
+}
+
+.form-control::placeholder {
+  color: #bbb;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.btn-primary {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  margin-top: 20px;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.btn-primary:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.alert {
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-top: 15px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.invalid-feedback {
+  color: #ffcccc;
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+@media (max-width: 768px) {
+  .cart-container {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .cart-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .cart-image {
+    margin-bottom: 10px;
+  }
+
+  .cart-details {
+    margin-bottom: 10px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-row .form-group {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .btn-primary,
+  .btnClear,
+  .btnBuy {
+    width: calc(100% - 20px);
+    margin: 5px 10px;
+  }
+}
+
+
+.credit-card-wrapper {
+  width: 400px;
+  height: 250px;
+  margin: 40px auto;
+  perspective: 1200px;
+  position: relative;
+}
+
+.credit-card-display {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 30px;
+  color: white;
+  font-family: 'Courier New', Courier, monospace;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+.front {
+  background: linear-gradient(135deg, #1f4037, #99f2c8);
+  z-index: 2;
+}
+
+.back {
+  background: linear-gradient(135deg, #4b6cb7, #182848);
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.credit-card-wrapper.show-back .front {
+  transform: rotateY(180deg);
+}
+
+.credit-card-wrapper.show-back .back {
+  transform: rotateY(360deg);
+}
+
+.card-chip {
+  width: 60px;
+  height: 40px;
+  background: linear-gradient(135deg, #e0e0e0, #a0a0a0);
+  border-radius: 8px;
+  margin-bottom: 40px;
+}
+
+.card-number {
+  font-size: 26px;
+  letter-spacing: 3px;
+  margin-bottom: 40px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.card-holder .label,
+.card-expiry .label {
+  font-size: 12px;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+
+.card-holder .value,
+.card-expiry .value {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.black-strip {
+  height: 50px;
+  background: black;
+  margin-top: 30px;
+  border-radius: 4px;
+}
+
+.cvv-box {
+  margin-top: 30px;
+  background: #fff;
+  color: #000;
+  padding: 10px;
+  width: 80px;
+  text-align: center;
+  border-radius: 4px;
+  float: right;
+}
+
+.cvv-label {
+  font-size: 10px;
+  font-weight: bold;
+  display: block;
+  text-transform: uppercase;
+}
+
+.cvv-value {
+  font-size: 16px;
+  font-weight: bold;
 }

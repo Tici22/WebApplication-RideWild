@@ -1,5 +1,5 @@
 <!-- LOADER BICI -->
-<div class="loader-overlay" *ngIf="isLoading">
+<div class="loader-overlay" *ngIf="isLoading || isPaymentProcessing">
   <svg class="bike" viewBox="0 0 48 30" width="96" height="60" aria-label="Loading animation" role="img">
     <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1">
       <g transform="translate(9.5,19)">
@@ -36,7 +36,7 @@
 
   <div class="cart-row" *ngFor="let item of cart">
     <div class="cart-image">
-      <img src="/images/placeholderbike.jpg" alt="{{ item.product.name }}" />
+      <img src="https://placehold.co/100x100/505050/FFFFFF?text=Product" alt="{{ item.product.name }}" />
     </div>
     <div class="cart-details">
       <h3>{{ item.product.name }}</h3>
@@ -55,8 +55,102 @@
     <div class="cart-total-price">€{{ getTotalPrice() | number:'1.2-2' }}</div>
   </div>
 
-  <div class="text-center mt-4">
+  <div class="text-center mt-2">
     <button (click)="clearCart()" class="btnClear">Svuota carrello</button>
+  </div>
+  <div class="text-center">
+    <button (click)="showPaymentForm = true" class="btnBuy mb-3">Acquista ora</button>
+  </div>
+
+  <!-- Sezione Pagamento -->
+  <div *ngIf="showPaymentForm" class="payment-section">
+    <h3 class="text-center text-white mt-5">Dati di Pagamento</h3>
+    <form [formGroup]="paymentForm" (ngSubmit)="processPayment()">
+
+      <div class="credit-card-wrapper" (mousemove)="onCardMouseMove($event)" (mouseleave)="onCardMouseLeave()"
+        [class.show-back]="isCardFlipped" #cardRef>
+
+        <div class="credit-card-display front">
+          <div class="card-chip"></div>
+          <div class="card-number">{{ maskedCardNumber }}</div>
+          <div class="card-footer">
+            <div class="card-holder">
+              <span class="label">Titolare</span>
+              <span class="value">{{ paymentForm?.get('cardName')?.value || 'NOME COGNOME' }}</span>
+            </div>
+            <div class="card-expiry">
+              <span class="label">Scadenza</span>
+              <span class="value">{{ paymentForm?.get('expiryDate')?.value || 'MM/YY' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="credit-card-display back">
+          <div class="black-strip"></div>
+          <div class="cvv-box">
+            <span class="cvv-label">CVV</span>
+            <span class="cvv-value">{{ paymentForm?.get('cvv')?.value || '***' }}</span>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+        <label for="cardNumber">Numero di Carta</label>
+        <input type="text" id="cardNumber" formControlName="cardNumber" placeholder="XXXX XXXX XXXX XXXX"
+          class="form-control"
+          [class.is-invalid]="paymentForm.controls['cardNumber'].invalid && paymentForm.controls['cardNumber'].touched">
+        <div *ngIf="paymentForm.controls['cardNumber'].invalid && paymentForm.controls['cardNumber'].touched"
+          class="invalid-feedback">
+          <div *ngIf="paymentForm.controls['cardNumber'].errors?.['required']">Il numero di carta è richiesto.</div>
+          <div *ngIf="paymentForm.controls['cardNumber'].errors?.['pattern']">Inserisci un numero di carta valido (16
+            cifre).</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="cardName">Nome Titolare</label>
+        <input type="text" id="cardName" formControlName="cardName" placeholder="Nome Cognome" class="form-control"
+          [class.is-invalid]="paymentForm.controls['cardName'].invalid && paymentForm.controls['cardName'].touched">
+        <div *ngIf="paymentForm.controls['cardName'].invalid && paymentForm.controls['cardName'].touched"
+          class="invalid-feedback">
+          <div *ngIf="paymentForm.controls['cardName'].errors?.['required']">Il nome del titolare è richiesto.</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="expiryDate">Data Scadenza (MM/YY)</label>
+          <input type="text" id="expiryDate" formControlName="expiryDate" placeholder="MM/YY" class="form-control"
+            [class.is-invalid]="paymentForm.controls['expiryDate'].invalid && paymentForm.controls['expiryDate'].touched">
+          <div *ngIf="paymentForm.controls['expiryDate'].invalid && paymentForm.controls['expiryDate'].touched"
+            class="invalid-feedback">
+            <div *ngIf="paymentForm.controls['expiryDate'].errors?.['required']">La data di scadenza è richiesta.</div>
+            <div *ngIf="paymentForm.controls['expiryDate'].errors?.['pattern']">Formato data non valido (MM/YY).</div>
+          </div>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="cvv">CVV</label>
+          <input type="text" id="cvv" formControlName="cvv" placeholder="XXX" class="form-control"
+            [class.is-invalid]="paymentForm.controls['cvv'].invalid && paymentForm.controls['cvv'].touched">
+          <div *ngIf="paymentForm.controls['cvv'].invalid && paymentForm.controls['cvv'].touched"
+            class="invalid-feedback">
+            <div *ngIf="paymentForm.controls['cvv'].errors?.['required']">Il CVV è richiesto.</div>
+            <div *ngIf="paymentForm.controls['cvv'].errors?.['pattern']">Formato CVV non valido (3 o 4 cifre).</div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary mt-4" [disabled]="paymentForm.invalid">Paga Ora</button>
+    </form>
+
+    <div *ngIf="paymentSuccess" class="alert alert-success mt-3">
+      Pagamento effettuato con successo! Grazie per il tuo acquisto.
+    </div>
+    <div *ngIf="paymentError" class="alert alert-danger mt-3">
+      Si è verificato un errore durante il pagamento. Riprova.
+    </div>
   </div>
 </div>
 
