@@ -495,7 +495,7 @@ namespace Adventure19.Controllers
             if (storedCode != code)
                 return Unauthorized("Codice non valido.");
             // Verifica scadenza del codice (2 minuti)
-            if (DateTime.UtcNow - createdAt > TimeSpan.FromMinutes(1))
+            if (DateTime.UtcNow - createdAt > TimeSpan.FromMinutes(5))
             {
                 PasswordResetStore.ResetCodes.Remove(email);
                 return Unauthorized("Codice scaduto. Richiedi un nuovo reset.");
