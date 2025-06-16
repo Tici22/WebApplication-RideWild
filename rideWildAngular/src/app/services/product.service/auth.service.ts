@@ -146,10 +146,38 @@ export class AuthService {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
-    return this.http.post<any>(`${this.baseApiUrl}/reset-password`, null, { params ,headers});
+    return this.http.post<any>(`${this.baseApiUrl}/reset-password`, null, { params, headers });
   }
 
   logout(): void {
     localStorage.removeItem('token');
+  }
+
+  // Forgot Password
+  forgotPassword(email: string): Observable<string> {
+    const params = new HttpParams().set('email', email);
+    return this.http.post<string>(`${this.baseApiUrl}/forgotted-password`, null, {
+      params,
+      responseType: 'text' as 'json'
+    });
+
+  }
+
+  //Verifica del codie 
+  verifyCode(email: string
+    , code: string
+    , newPassword: string
+    , fullname: string
+
+
+  ): Observable<string> {
+    const params = new HttpParams().set('email', email)
+      .set('code', code)
+      .set('newPassword', newPassword)
+      .set('fullname', fullname);
+    return this.http.post<string>(`${this.baseApiUrl}/verify-code-and-reset`, null, {
+      params,
+      responseType: 'text' as 'json'
+    });
   }
 }

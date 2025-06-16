@@ -7,6 +7,8 @@ import { ShopComponent } from './pages/shop/shop.component';
 import { WishlistComponent } from './pages/wishlist/wishlist.component';
 import { OptionsComponent } from './pages/options/options.component';
 import { CartComponent } from './pages/cart/cart.component';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password.component';
+import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 
 export const routes: Routes = [
   {
@@ -44,6 +46,14 @@ export const routes: Routes = [
   {
     path: 'options',
     component: OptionsComponent
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent
+  },
+  {
+    path: 'verify',
+    component: ChangePasswordComponent
   },
   {
     path: '',
