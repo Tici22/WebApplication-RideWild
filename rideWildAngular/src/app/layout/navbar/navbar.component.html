@@ -56,8 +56,8 @@
         </div>
 
         <!-- Carrello -->
-
-      <li class="nav-item">
+        <!-- Mostra il contatore del carrello se l'utente è loggato -->
+      <li class="nav-item" *ngIf="isLoggedIn()"> 
         <div class="wishlist-icon" routerLink="/cart" title="Carrello">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler-shopping-cart">

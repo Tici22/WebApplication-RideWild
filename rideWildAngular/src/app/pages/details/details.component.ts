@@ -5,6 +5,7 @@ import { ProductService } from '../../services/product.service/product.service';
 import { WishlistService } from '../../services/product.service/wishlist.service';
 import { CartService } from '../../services/product.service/cart.service';
 import { ProductDto } from '../../models/product.models';
+import { AuthService } from '../../services/product.service/auth.service';
 
 @Component({
   selector: 'app-details',
@@ -39,6 +40,7 @@ export class DetailsComponent implements OnInit, AfterViewInit {
   @ViewChild('imageContainer', { static: true }) imageContainer!: ElementRef<HTMLDivElement>;
 
   constructor(
+    private authService: AuthService,
     private route: ActivatedRoute,
     private productService: ProductService,
     private wishlistService: WishlistService,
@@ -117,6 +119,13 @@ export class DetailsComponent implements OnInit, AfterViewInit {
   }
 
   buyNow(product: ProductDto): void {
+    if(!this.authService.isLogging()){
+      this.showMessage('Devi essere loggato per procedere all\'acquisto.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+
     for (let i = 0; i < this.quantity; i++) {
       this.cartService.addItem(product);
     }

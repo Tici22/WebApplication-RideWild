@@ -180,4 +180,9 @@ export class AuthService {
       responseType: 'text' as 'json'
     });
   }
+
+  isLogging(): boolean {
+    const token = this.getToken();
+    return token !== null;
+  }
 }
